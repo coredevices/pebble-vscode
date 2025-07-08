@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "pebble-vscode.helloWorld",
-        "title": "Hello World"
+        "command": "pebble-vscode.newProject",
+        "title": "Pebble: New Project"
       }
     ]
   },

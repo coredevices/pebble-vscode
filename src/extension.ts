@@ -31,9 +31,19 @@ async function createProject() {
 	const projectType = await vscode.window.showQuickPick(['C (default)', 'C basic', 'C and JS'], {
 	});
 
+	if (!projectType) {
+		vscode.window.showErrorMessage('No project type selected. Project creation cancelled.');
+		return;
+	}
+
 	const projectName = await vscode.window.showInputBox({
 		prompt: 'Enter the name of the new project',
 	});
+
+	if (!projectName) {
+		vscode.window.showErrorMessage('No project name provided. Project creation cancelled.');
+		return;
+	}
 
 	const folderUri = await vscode.window.showOpenDialog({
 		canSelectFiles: false,

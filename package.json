@@ -20,6 +20,10 @@
       {
         "command": "pebble-vscode.buildProject",
         "title": "Pebble: Build Project"
+      },
+      {
+        "command": "pebble-vscode.installOnEmulator",
+        "title": "Pebble: Install on Emulator"
       }
     ]
   },

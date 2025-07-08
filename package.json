@@ -24,6 +24,10 @@
       {
         "command": "pebble-vscode.installOnEmulator",
         "title": "Pebble: Install on Emulator"
+      },
+      {
+        "command": "pebble-vscode.installOnEmulatorWithLogs",
+        "title": "Pebble: Install on Emulator with Logs"
       }
     ]
   },

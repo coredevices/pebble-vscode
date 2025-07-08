@@ -30,6 +30,10 @@ export function activate(context: vscode.ExtensionContext) {
 		installOnEmulator();
 	});
 
+	const installWithLogsDisposable = vscode.commands.registerCommand('pebble-vscode.installOnEmulatorWithLogs', () => {
+		installOnEmulatorWithLogs();
+	});
+
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(buildDisposable);
 }
@@ -116,7 +120,15 @@ async function buildProject() {
 }
 
 async function installOnEmulator() {
+	const platform = await requestEmulatorPlatform();
+	if (!platform) {
+		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
+		return;
+	}
+	runInstallOnEmulator(platform);
+}
 
+async function requestEmulatorPlatform() {
 	const platformMap: { [key: string] : string } = {
 		'Pebble Time': 'basalt',
 		'Pebble 2': 'diorite',
@@ -131,12 +143,32 @@ async function installOnEmulator() {
 	});
 	
 	if (!platformName) {
-		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
 		return;
 	}
 
 	const platform = platformMap[platformName];
+	return platform;
+}
 
+async function installOnEmulatorWithLogs() {
+	const platform = await requestEmulatorPlatform();
+	if (!platform) {
+		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
+		return;
+	}
+
+	const workspacePath = getWorkspacePath();
+	if (!workspacePath) {
+		vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder to install the project.');
+		return;
+	}
+
+	const terminal = vscode.window.createTerminal(`Pebble Install on Emulator`);
+	terminal.show();
+	terminal.sendText(`pebble install --emulator ${platform} --logs`, true);
+}
+
+async function runInstallOnEmulator(platform: string) {
 	cp.exec(`pebble install --emulator ${platform}`, {
 		cwd: getWorkspacePath()
 	}, (error, stdout, stderr) => {

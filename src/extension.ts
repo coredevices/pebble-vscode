@@ -34,6 +34,31 @@ export function activate(context: vscode.ExtensionContext) {
 		installOnEmulatorWithLogs();
 	});
 
+	const pebbleTaskProvider = vscode.tasks.registerTaskProvider('pebble', {
+		provideTasks: () => {
+			// Create a task for building the Pebble project
+			const buildTask = new vscode.Task(
+				{ type: 'pebble', task: 'build-install' },
+				vscode.TaskScope.Workspace,
+				'Build and Install Project',
+				'pebble',
+				new vscode.ShellExecution('pebble build && pebble install --emulator basalt')
+			);
+			buildTask.group = vscode.TaskGroup.Build;
+			buildTask.presentationOptions = {
+				reveal: vscode.TaskRevealKind.Always,
+				panel: vscode.TaskPanelKind.New
+			};
+			return [buildTask];
+		},
+		resolveTask(_task: vscode.Task): vscode.Task | undefined {
+			// This method is called when a task is resolved
+			// You can return the task or undefined if you don't want to resolve it
+			return undefined;
+		}
+	});
+	context.subscriptions.push(pebbleTaskProvider);
+
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(buildDisposable);
 }

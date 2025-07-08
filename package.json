@@ -19,7 +19,8 @@
       },
       {
         "command": "pebble-vscode.buildProject",
-        "title": "Pebble: Build Project"
+        "title": "Pebble: Build Project",
+        "icon": "$(play)"
       },
       {
         "command": "pebble-vscode.installOnEmulator",
@@ -29,7 +30,22 @@
         "command": "pebble-vscode.installOnEmulatorWithLogs",
         "title": "Pebble: Install on Emulator with Logs"
       }
-    ]
+    ],
+    "taskDefinitions": [
+      {
+        "type": "pebble",
+        "required": [],
+        "properties": {}
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "pebble-vscode.buildProject",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

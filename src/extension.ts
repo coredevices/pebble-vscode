@@ -21,7 +21,12 @@ export function activate(context: vscode.ExtensionContext) {
 		createProject();
 	});
 
+	const buildDisposable = vscode.commands.registerCommand('pebble-vscode.buildProject', () => {
+		buildProject();
+	});
+
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(buildDisposable);
 }
 
 // This method is called when your extension is deactivated
@@ -81,4 +86,19 @@ async function createProject() {
 		vscode.window.showInformationMessage(`Project created successfully: ${stdout}`);
 		vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(`${projectPath}/${projectName}`));
 	});
+}
+
+async function buildProject() {
+	// Get the current workspace directory
+	const workspaceFolders = vscode.workspace.workspaceFolders;
+	if (!workspaceFolders || workspaceFolders.length === 0) {
+		vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder to build the project.');
+		return;
+	}
+	const workspacePath = workspaceFolders[0].uri.fsPath;
+
+	// Run the build command in the terminal
+	const terminal = vscode.window.createTerminal(`Pebble Build`);
+	terminal.show();
+	terminal.sendText(`pebble build`, true);
 }

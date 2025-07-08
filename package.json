@@ -16,6 +16,10 @@
       {
         "command": "pebble-vscode.newProject",
         "title": "Pebble: New Project"
+      },
+      {
+        "command": "pebble-vscode.buildProject",
+        "title": "Pebble: Build Project"
       }
     ]
   },

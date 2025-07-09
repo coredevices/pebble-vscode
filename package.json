@@ -14,6 +14,24 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "pebble-vscode",
+          "title": "Pebble",
+          "icon": "resources/pebble-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "pebble-vscode": [
+        {
+          "id": "pebble-vscode.pebbleView",
+          "name": "Pebble Projects",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "pebble-vscode.newProject",

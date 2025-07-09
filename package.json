@@ -67,15 +67,23 @@
     "commands": [
       {
         "command": "pebble-vscode.newProject",
-        "title": "Pebble: New Project"
+        "title": "New Project",
+        "category": "Pebble"
       },
       {
         "command": "pebble-vscode.run",
-        "title": "Pebble: Run Project"
+        "title": "Run Project",
+        "category": "Pebble"
       },
       {
         "command": "pebble-vscode.runWithLogs",
-        "title": "Pebble: Run Project with Logs"
+        "title": "Run Project with Logs",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble-vscode.setDefaultPlatform",
+        "title": "Set Default Platform",
+        "category": "Pebble"
       }
     ],
     "menus": {

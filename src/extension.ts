@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { PebbleViewProvider } from './pebbleViewProvider';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
 import { platform } from 'os';
+import * as os from 'os';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -203,8 +204,9 @@ async function createProject() {
 		canSelectFiles: false,
 		canSelectFolders: true,
 		canSelectMany: false,
-		openLabel: 'Select a folder to create the project in',
+		openLabel: 'Create project here',
 		title: 'Create a new Pebble project',
+		defaultUri: vscode.Uri.file(os.homedir())
 	});
 
 	if (!folderUri || folderUri.length === 0) {

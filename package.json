@@ -71,7 +71,6 @@
           "name": "Pebble",
           "type": "tree",
           "contextualTitle": "Pebble Projects",
-          "when": "pebbleProject",
           "icon": "$(file-code)"
         }
       ]

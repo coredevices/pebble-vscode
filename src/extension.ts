@@ -21,15 +21,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	console.log('Pebble extension activated');
 
-	const disposable = vscode.commands.registerCommand('pebble-vscode.newProject', () => {
+	const newProject = vscode.commands.registerCommand('pebble-vscode.newProject', () => {
 		createProject();
 	});
 
-	const runDisposable = vscode.commands.registerCommand('pebble-vscode.run', async () => {
+	const run = vscode.commands.registerCommand('pebble-vscode.run', async () => {
 		runWithArgs();
 	});
 
-	const runWithLogsDisposable = vscode.commands.registerCommand('pebble-vscode.runWithLogs', async () => {
+	const runWithLogs = vscode.commands.registerCommand('pebble-vscode.runWithLogs', async () => {
 		runWithArgs('--logs');
 	});
 
@@ -43,8 +43,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
 	});
 
-	context.subscriptions.push(disposable);
-
 	const treeDataProvider = new PebbleTreeProvider();
 	const treeView = vscode.window.createTreeView('myTreeView', {
 		treeDataProvider: treeDataProvider
@@ -54,6 +52,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(treeView);
 
 	// context.subscriptions.push(vscode.window.registerTreeDataProvider('myTreeView', new PebbleTreeProvider()));
+
+	context.subscriptions.push(newProject, run, runWithLogs);
 }
 
 export function deactivate() {}

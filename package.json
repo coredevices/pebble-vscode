@@ -28,13 +28,6 @@
         "title": "Pebble: Run Project with Logs"
       }
     ],
-    "taskDefinitions": [
-      {
-        "type": "pebble",
-        "required": [],
-        "properties": {}
-      }
-    ],
     "menus": {
       "editor/title/run": [
         {

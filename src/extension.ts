@@ -3,10 +3,17 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import { get } from 'http';
+import * as fs from 'fs';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+
+	if (await isPebbleProject()) {
+		vscode.commands.executeCommand('setContext', 'pebbleProject', true);
+	} else {
+		vscode.commands.executeCommand('setContext', 'pebbleProject', false);
+	}
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -34,24 +41,39 @@ export function activate(context: vscode.ExtensionContext) {
 		installOnEmulatorWithLogs();
 	});
 
+	const runDisposable = vscode.commands.registerCommand('pebble-vscode.run', () => {
+		buildProject()
+		.then(() => {
+			installOnEmulator();
+		})
+	});
+
 	const pebbleTaskProvider = vscode.tasks.registerTaskProvider('pebble', {
-		provideTasks: () => {
-			// Create a task for building the Pebble project
-			const buildTask = new vscode.Task(
-				{ type: 'pebble', task: 'build-install' },
-				vscode.TaskScope.Workspace,
-				'Build and Install Project',
-				'pebble',
-				new vscode.ShellExecution('pebble build && pebble install --emulator basalt')
-			);
-			buildTask.group = vscode.TaskGroup.Build;
-			buildTask.presentationOptions = {
-				reveal: vscode.TaskRevealKind.Always,
-				panel: vscode.TaskPanelKind.New
-			};
-			return [buildTask];
+		provideTasks: async function (): Promise<vscode.Task[]> {
+			const tasks : vscode.Task[] = [];
+
+			// const isProject = await isPebbleProject();
+
+			// if (vscode.workspace.workspaceFolders && isProject) {
+			// 	// Create a task for building the Pebble project
+			// 	const buildTask = new vscode.Task(
+			// 		{ type: 'pebble', task: 'build-install' },
+			// 		vscode.TaskScope.Workspace,
+			// 		'Build and Install Project',
+			// 		'pebble',
+			// 		new vscode.ShellExecution('pebble build && pebble install --emulator basalt')
+			// 	);
+			// 	buildTask.group = vscode.TaskGroup.Build;
+			// 	buildTask.presentationOptions = {
+			// 		reveal: vscode.TaskRevealKind.Always,
+			// 		panel: vscode.TaskPanelKind.New
+			// 	};
+			// 	tasks.push(buildTask);
+			// }
+
+			return tasks;
 		},
-		resolveTask(_task: vscode.Task): vscode.Task | undefined {
+		resolveTask: function (_task: vscode.Task): vscode.Task | undefined {
 			// This method is called when a task is resolved
 			// You can return the task or undefined if you don't want to resolve it
 			return undefined;
@@ -61,6 +83,22 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(buildDisposable);
+}
+
+async function isPebbleProject() : Promise<boolean> {
+	if (!vscode.workspace.workspaceFolders) {
+		return false;
+	}
+
+	const packageJsonUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'package.json');
+
+	try {
+		const fileContent = await vscode.workspace.fs.readFile(packageJsonUri);
+		const packageJson = JSON.parse(fileContent.toString());
+		return 'pebble' in packageJson;
+	} catch {
+		return false;
+	}
 }
 
 // This method is called when your extension is deactivated

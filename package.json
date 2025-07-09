@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "workspaceContains:wscript"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -29,6 +31,10 @@
       {
         "command": "pebble-vscode.installOnEmulatorWithLogs",
         "title": "Pebble: Install on Emulator with Logs"
+      },
+      {
+        "command": "pebble-vscode.run",
+        "title": "Pebble: Run Project"
       }
     ],
     "taskDefinitions": [
@@ -41,8 +47,9 @@
     "menus": {
       "editor/title/run": [
         {
-          "command": "pebble-vscode.buildProject",
-          "group": "navigation"
+          "command": "pebble-vscode.run",
+          "group": "navigation",
+          "when": "pebbleProject"
         }
       ]
     }

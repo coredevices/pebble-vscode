@@ -35,6 +35,11 @@
           ],
           "default": "basalt",
           "description": "Default platform to run a project in the emulator."
+        },
+        "pebble-vscode.phoneIp": {
+          "type": "string",
+          "default": "",
+          "description": "IP address of the phone connected to Pebble."
         }
       }
     },
@@ -84,6 +89,16 @@
       {
         "command": "pebble-vscode.setDefaultPlatform",
         "title": "Set Default Platform",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble-vscode.runOnPhone",
+        "title": "Run Project on Phone",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble-vscode.runOnPhoneWithLogs",
+        "title": "Run Project on Phone with Logs",
         "category": "Pebble"
       }
     ],

@@ -33,7 +33,6 @@
             "Pebble 2",
             "Pebble Time 2"
           ],
-          "default": "basalt",
           "description": "Default platform to run a project in the emulator."
         },
         "pebble-vscode.phoneIp": {

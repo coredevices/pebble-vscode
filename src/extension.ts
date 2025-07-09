@@ -260,6 +260,8 @@ async function getEmulatorPlatform() {
 		const config = vscode.workspace.getConfiguration('pebble-vscode');
 		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
 	}
+
+	return platform;
 }
 
 async function requestEmulatorPlatform() {

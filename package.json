@@ -41,7 +41,7 @@
     "viewsWelcome": [
       {
         "view": "myTreeView",
-        "contents": "[New Project](command:pebble-vscode.newProject)"
+        "contents": "[New Project](command:pebble-vscode.newProject)\n[Change Emulator Platform](command:pebble-vscode.setDefaultPlatform)"
       }
     ],
     "viewsContainers": {

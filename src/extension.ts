@@ -28,6 +28,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 }
 
+export function deactivate() {}
+
 async function runWithArgs(args = '') {
 	const platform = await requestEmulatorPlatform();
 	if (!platform) {
@@ -41,8 +43,13 @@ async function runWithArgs(args = '') {
 		return;
 	}
 
-	const terminal = vscode.window.createTerminal(`Pebble Run`);
+	let terminal = vscode.window.terminals.find(t => t.name === `Pebble Run`);
+	if (!terminal) {
+		terminal = vscode.window.createTerminal(`Pebble Run`);
+	}
+
 	terminal.show();
+	terminal.sendText('\x03'); // Send Ctrl+C
 	terminal.sendText(`pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''}`, true);
 }
 
@@ -61,8 +68,6 @@ async function isPebbleProject() : Promise<boolean> {
 		return false;
 	}
 }
-
-export function deactivate() {}
 
 
 function getWorkspacePath(): string | undefined {

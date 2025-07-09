@@ -45,8 +45,14 @@
     },
     "viewsWelcome": [
       {
-        "view": "myTreeView",
-        "contents": "[New Project](command:pebble-vscode.newProject)\n[Change Emulator Platform](command:pebble-vscode.setDefaultPlatform)"
+        "view": "backgroundTreeView",
+        "contents": "[New Project](command:pebble-vscode.newProject)\nSettings\n[Change Emulator Platform](command:pebble-vscode.setDefaultPlatform)\n[Change Phone IP](command:pebble-vscode.setPhoneIp)",
+        "when": "pebbleProject"
+      },
+      {
+        "view": "backgroundTreeView",
+        "contents": "[New Project](command:pebble-vscode.newProject)",
+        "when": "!pebbleProject"
       }
     ],
     "viewsContainers": {
@@ -61,7 +67,7 @@
     "views": {
       "pebble-vscode": [
         {
-          "id": "myTreeView",
+          "id": "backgroundTreeView",
           "name": "Pebble",
           "type": "tree",
           "contextualTitle": "Pebble Projects",
@@ -99,6 +105,11 @@
       {
         "command": "pebble-vscode.runOnPhoneWithLogs",
         "title": "Run Project on Phone with Logs",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble-vscode.setPhoneIp",
+        "title": "Set Phone IP",
         "category": "Pebble"
       }
     ],

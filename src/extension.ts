@@ -51,6 +51,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
 	});
 
+	const setPhoneIp = vscode.commands.registerCommand('pebble-vscode.setPhoneIp', async () => {
+		const phoneIp = await requestPhoneIp();
+		if (!phoneIp) {
+			vscode.window.showErrorMessage('No phone IP address provided. Action cancelled.');
+			return;
+		}
+		const config = vscode.workspace.getConfiguration('pebble-vscode');
+		await config.update('phoneIp', phoneIp, vscode.ConfigurationTarget.Global);
+	});
+
 	const treeDataProvider = new PebbleTreeProvider();
 	const treeView = vscode.window.createTreeView('myTreeView', {
 		treeDataProvider: treeDataProvider
@@ -61,7 +71,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// context.subscriptions.push(vscode.window.registerTreeDataProvider('myTreeView', new PebbleTreeProvider()));
 
-	context.subscriptions.push(newProject, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs);
+	context.subscriptions.push(newProject, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp);
 }
 
 export function deactivate() {}
@@ -96,9 +106,10 @@ async function getPhoneIp() {
 		return storedPhoneIp;
 	}
 
-	const phoneIp = await vscode.window.showInputBox({
-		prompt: 'Enter the IP address of phone. Find it in developer settings on your Pebble app.'
-	});
+	const phoneIp = await requestPhoneIp();
+	if (!phoneIp) {
+		return;
+	}
 
 	const setDefault = await vscode.window.showQuickPick(['No', 'Yes'], {
 		placeHolder: 'Set this IP as the default for future runs?',
@@ -111,7 +122,15 @@ async function getPhoneIp() {
 	}
 
 	return phoneIp;
-};		
+};
+
+async function requestPhoneIp() {
+	const phoneIp = await vscode.window.showInputBox({
+		prompt: 'Enter the IP address of phone. Find it in developer settings on your Pebble app.'
+	});
+
+	return phoneIp;
+}
 
 async function runWithArgs(args = '') {
 	const platform = await getEmulatorPlatform();
@@ -151,7 +170,6 @@ async function isPebbleProject() : Promise<boolean> {
 		return false;
 	}
 }
-
 
 function getWorkspacePath(): string | undefined {
 	const workspaceFolders = vscode.workspace.workspaceFolders;

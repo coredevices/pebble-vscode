@@ -248,7 +248,7 @@ async function getEmulatorPlatform() {
 	
 	const platform = await requestEmulatorPlatform();
 	if (!platform) {
-		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
+		return;
 	}
 
 	const setDefault = await vscode.window.showQuickPick(['No', 'Yes'], {

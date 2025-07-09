@@ -160,7 +160,7 @@ async function requestEmulatorPlatform() {
 		'Pebble Time Round': 'chalk',
 		'Pebble Time 2': 'emery',
 		'Pebble Classic': 'aplite',
-	}
+	};
 
 	const platformName = await vscode.window.showQuickPick(Object.keys(platformMap), {
 		placeHolder: 'Select a platform to emulate',
@@ -169,6 +169,16 @@ async function requestEmulatorPlatform() {
 	
 	if (!platformName) {
 		return;
+	}
+
+	const setDefault = await vscode.window.showQuickPick(['Yes', 'No'], {
+		placeHolder: 'Set this platform as the default for future runs?',
+		canPickMany: false,
+	});
+
+	if (setDefault === 'Yes') {
+		const config = vscode.workspace.getConfiguration('pebble-vscode');
+		await config.update('defaultPlatform', platformMap[platformName], vscode.ConfigurationTarget.Global);
 	}
 
 	const platform = platformMap[platformName];

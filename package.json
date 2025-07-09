@@ -14,6 +14,30 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Pebble",
+      "properties": {
+        "pebble-vscode.defaultPlatform": {
+          "type": "string",
+          "enum": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite",
+            "emery"
+          ],
+          "enumItemLabels": [
+            "Pebble Classic",
+            "Pebble Time",
+            "Pebble Time Round",
+            "Pebble 2",
+            "Pebble Time 2"
+          ],
+          "default": "basalt",
+          "description": "Default platform to run a project in the emulator."
+        }
+      }
+    },
     "viewsWelcome": [
       {
         "view": "myTreeView",

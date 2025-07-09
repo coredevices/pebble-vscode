@@ -1,12 +1,8 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import { get } from 'http';
 import * as fs from 'fs';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
 
 	if (await isPebbleProject()) {
@@ -15,37 +11,18 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'pebbleProject', false);
 	}
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "pebble-vscode" is now active!');
+	console.log('Pebble extension activated');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
 	const disposable = vscode.commands.registerCommand('pebble-vscode.newProject', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		// vscode.window.showInformationMessage('Hello World from pebble-vscode!');
 		createProject();
 	});
 
-	const buildDisposable = vscode.commands.registerCommand('pebble-vscode.buildProject', () => {
-		buildProject();
+	const runDisposable = vscode.commands.registerCommand('pebble-vscode.run', async () => {
+		runWithArgs();
 	});
 
-	const installDisposable = vscode.commands.registerCommand('pebble-vscode.installOnEmulator', () => {
-		installOnEmulator();
-	});
-
-	const installWithLogsDisposable = vscode.commands.registerCommand('pebble-vscode.installOnEmulatorWithLogs', () => {
-		installOnEmulatorWithLogs();
-	});
-
-	const runDisposable = vscode.commands.registerCommand('pebble-vscode.run', () => {
-		buildProject()
-		.then(() => {
-			installOnEmulator();
-		})
+	const runWithLogsDisposable = vscode.commands.registerCommand('pebble-vscode.runWithLogs', async () => {
+		runWithArgs('--logs');
 	});
 
 	const pebbleTaskProvider = vscode.tasks.registerTaskProvider('pebble', {
@@ -82,7 +59,24 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(pebbleTaskProvider);
 
 	context.subscriptions.push(disposable);
-	context.subscriptions.push(buildDisposable);
+}
+
+async function runWithArgs(args = '') {
+	const platform = await requestEmulatorPlatform();
+	if (!platform) {
+		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
+		return;
+	}
+
+	const workspacePath = getWorkspacePath();
+	if (!workspacePath) {
+		vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder to run the project.');
+		return;
+	}
+
+	const terminal = vscode.window.createTerminal(`Pebble Run`);
+	terminal.show();
+	terminal.sendText(`pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''}`, true);
 }
 
 async function isPebbleProject() : Promise<boolean> {
@@ -101,12 +95,10 @@ async function isPebbleProject() : Promise<boolean> {
 	}
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
 
 
 function getWorkspacePath(): string | undefined {
-	// Get the current workspace directory
 	const workspaceFolders = vscode.workspace.workspaceFolders;
 	if (!workspaceFolders || workspaceFolders.length === 0) {
 		vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder to build the project.');
@@ -172,25 +164,6 @@ async function createProject() {
 	});
 }
 
-async function buildProject() {
-	
-	const workspacePath = getWorkspacePath();
-
-	// Run the build command in the terminal
-	const terminal = vscode.window.createTerminal(`Pebble Build`);
-	terminal.show();
-	terminal.sendText(`pebble build`, true);
-}
-
-async function installOnEmulator() {
-	const platform = await requestEmulatorPlatform();
-	if (!platform) {
-		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
-		return;
-	}
-	runInstallOnEmulator(platform);
-}
-
 async function requestEmulatorPlatform() {
 	const platformMap: { [key: string] : string } = {
 		'Pebble Time': 'basalt',
@@ -211,38 +184,4 @@ async function requestEmulatorPlatform() {
 
 	const platform = platformMap[platformName];
 	return platform;
-}
-
-async function installOnEmulatorWithLogs() {
-	const platform = await requestEmulatorPlatform();
-	if (!platform) {
-		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
-		return;
-	}
-
-	const workspacePath = getWorkspacePath();
-	if (!workspacePath) {
-		vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder to install the project.');
-		return;
-	}
-
-	const terminal = vscode.window.createTerminal(`Pebble Install on Emulator`);
-	terminal.show();
-	terminal.sendText(`pebble install --emulator ${platform} --logs`, true);
-}
-
-async function runInstallOnEmulator(platform: string) {
-	cp.exec(`pebble install --emulator ${platform}`, {
-		cwd: getWorkspacePath()
-	}, (error, stdout, stderr) => {
-		if (error) {
-			vscode.window.showErrorMessage(`Error installing on emulator: ${error.message}`);
-			return;
-		}
-		if (stderr) {
-			vscode.window.showErrorMessage(`Error: ${stderr}`);
-			return;
-		}
-		vscode.window.showInformationMessage(`Installed on emulator`);
-	});
 }

@@ -20,21 +20,12 @@
         "title": "Pebble: New Project"
       },
       {
-        "command": "pebble-vscode.buildProject",
-        "title": "Pebble: Build Project",
-        "icon": "$(play)"
-      },
-      {
-        "command": "pebble-vscode.installOnEmulator",
-        "title": "Pebble: Install on Emulator"
-      },
-      {
-        "command": "pebble-vscode.installOnEmulatorWithLogs",
-        "title": "Pebble: Install on Emulator with Logs"
-      },
-      {
         "command": "pebble-vscode.run",
         "title": "Pebble: Run Project"
+      },
+      {
+        "command": "pebble-vscode.runWithLogs",
+        "title": "Pebble: Run Project with Logs"
       }
     ],
     "taskDefinitions": [
@@ -48,6 +39,11 @@
       "editor/title/run": [
         {
           "command": "pebble-vscode.run",
+          "group": "navigation",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble-vscode.runWithLogs",
           "group": "navigation",
           "when": "pebbleProject"
         }

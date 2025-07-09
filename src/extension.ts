@@ -4,6 +4,7 @@ import { get } from 'http';
 import * as fs from 'fs';
 import { PebbleViewProvider } from './pebbleViewProvider';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
+import { platform } from 'os';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -32,6 +33,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		runWithArgs('--logs');
 	});
 
+	vscode.commands.registerCommand('pebble-vscode.setDefaultPlatform', async () => {
+		const platform = await requestEmulatorPlatform();
+		if (!platform) {
+			vscode.window.showErrorMessage('No platform selected. Action cancelled.');
+			return;
+		}
+		const config = vscode.workspace.getConfiguration('pebble-vscode');
+		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
+	});
+
 	context.subscriptions.push(disposable);
 
 	const treeDataProvider = new PebbleTreeProvider();
@@ -48,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext) {
 export function deactivate() {}
 
 async function runWithArgs(args = '') {
-	const platform = await requestEmulatorPlatform();
+	const platform = await getEmulatorPlatform();
 	if (!platform) {
 		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
 		return;
@@ -153,28 +164,16 @@ async function createProject() {
 	});
 }
 
-async function requestEmulatorPlatform() {
+async function getEmulatorPlatform() {
 	const defaultPlatform = vscode.workspace.getConfiguration('pebble-vscode').get<string>('defaultPlatform');
 
 	if (defaultPlatform) {
 		return defaultPlatform;
 	}
 	
-	const platformMap: { [key: string] : string } = {
-		'Pebble Time': 'basalt',
-		'Pebble 2': 'diorite',
-		'Pebble Time Round': 'chalk',
-		'Pebble Time 2': 'emery',
-		'Pebble Classic': 'aplite',
-	};
-
-	const platformName = await vscode.window.showQuickPick(Object.keys(platformMap), {
-		placeHolder: 'Select a platform to emulate',
-		canPickMany: false,
-	});
-	
-	if (!platformName) {
-		return;
+	const platform = await requestEmulatorPlatform();
+	if (!platform) {
+		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
 	}
 
 	const setDefault = await vscode.window.showQuickPick(['No', 'Yes'], {
@@ -184,7 +183,26 @@ async function requestEmulatorPlatform() {
 
 	if (setDefault === 'Yes') {
 		const config = vscode.workspace.getConfiguration('pebble-vscode');
-		await config.update('defaultPlatform', platformMap[platformName], vscode.ConfigurationTarget.Global);
+		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
+	}
+}
+
+async function requestEmulatorPlatform() {
+	const platformMap: { [key: string] : string } = {
+		'Pebble Classic': 'aplite',
+		'Pebble Time': 'basalt',
+		'Pebble Time Round': 'chalk',
+		'Pebble 2': 'diorite',
+		'Pebble Time 2': 'emery',
+	};
+
+	const platformName = await vscode.window.showQuickPick(Object.keys(platformMap), {
+		placeHolder: 'Select a platform to emulate',
+		canPickMany: false,
+	});
+	
+	if (!platformName) {
+		return;
 	}
 
 	const platform = platformMap[platformName];

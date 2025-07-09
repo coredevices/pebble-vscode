@@ -154,6 +154,12 @@ async function createProject() {
 }
 
 async function requestEmulatorPlatform() {
+	const defaultPlatform = vscode.workspace.getConfiguration('pebble-vscode').get<string>('defaultPlatform');
+
+	if (defaultPlatform) {
+		return defaultPlatform;
+	}
+	
 	const platformMap: { [key: string] : string } = {
 		'Pebble Time': 'basalt',
 		'Pebble 2': 'diorite',
@@ -171,7 +177,7 @@ async function requestEmulatorPlatform() {
 		return;
 	}
 
-	const setDefault = await vscode.window.showQuickPick(['Yes', 'No'], {
+	const setDefault = await vscode.window.showQuickPick(['No', 'Yes'], {
 		placeHolder: 'Set this platform as the default for future runs?',
 		canPickMany: false,
 	});

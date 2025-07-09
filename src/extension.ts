@@ -3,6 +3,7 @@ import * as cp from 'child_process';
 import { get } from 'http';
 import * as fs from 'fs';
 import { PebbleViewProvider } from './pebbleViewProvider';
+import { PebbleTreeProvider } from './pebbleTreeProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -32,6 +33,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	const treeDataProvider = new PebbleTreeProvider();
+	const treeView = vscode.window.createTreeView('myTreeView', {
+		treeDataProvider: treeDataProvider
+	});
+
+	// treeView.message = 'This is a Pebble Tree View.';
+	context.subscriptions.push(treeView);
+
+	// context.subscriptions.push(vscode.window.registerTreeDataProvider('myTreeView', new PebbleTreeProvider()));
 }
 
 export function deactivate() {}

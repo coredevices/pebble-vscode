@@ -14,6 +14,12 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsWelcome": [
+      {
+        "view": "myTreeView",
+        "contents": "[New Project](command:pebble-vscode.newProject)\n[Clone Repository](command:git.clone)\nTo learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm)."
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -26,9 +32,11 @@
     "views": {
       "pebble-vscode": [
         {
-          "id": "pebble-vscode.pebbleView",
+          "id": "myTreeView",
           "name": "Pebble Projects",
-          "type": "webview"
+          "type": "tree",
+          "contextualTitle": "Pebble Projects",
+          "when": "pebbleProject"
         }
       ]
     },

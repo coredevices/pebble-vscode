@@ -45,7 +45,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	const setDefaultPlatform = vscode.commands.registerCommand('pebble-vscode.setDefaultPlatform', async () => {
 		const platform = await requestEmulatorPlatform();
 		if (!platform) {
-			vscode.window.showErrorMessage('No platform selected. Action cancelled.');
 			return;
 		}
 		const config = vscode.workspace.getConfiguration('pebble-vscode');
@@ -55,7 +54,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	const setPhoneIp = vscode.commands.registerCommand('pebble-vscode.setPhoneIp', async () => {
 		const phoneIp = await requestPhoneIp();
 		if (!phoneIp) {
-			vscode.window.showErrorMessage('No phone IP address provided. Action cancelled.');
 			return;
 		}
 		const config = vscode.workspace.getConfiguration('pebble-vscode');
@@ -63,7 +61,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	const treeDataProvider = new PebbleTreeProvider();
-	const treeView = vscode.window.createTreeView('myTreeView', {
+	const treeView = vscode.window.createTreeView('backgroundTreeView', {
 		treeDataProvider: treeDataProvider
 	});
 
@@ -86,7 +84,6 @@ async function runOnPhoneWithArgs(args = '') {
 
 	const phoneIp = await getPhoneIp();
 	if (!phoneIp) {
-		vscode.window.showErrorMessage('No phone IP address provided. Installation cancelled.');
 		return;
 	}
 
@@ -136,7 +133,6 @@ async function requestPhoneIp() {
 async function runWithArgs(args = '') {
 	const platform = await getEmulatorPlatform();
 	if (!platform) {
-		vscode.window.showErrorMessage('No platform selected. Installation cancelled.');
 		return;
 	}
 
@@ -187,7 +183,6 @@ async function createProject() {
 	});
 
 	if (!projectType) {
-		vscode.window.showErrorMessage('No project type selected. Project creation cancelled.');
 		return;
 	}
 
@@ -196,7 +191,6 @@ async function createProject() {
 	});
 
 	if (!projectName) {
-		vscode.window.showErrorMessage('No project name provided. Project creation cancelled.');
 		return;
 	}
 
@@ -210,7 +204,6 @@ async function createProject() {
 	});
 
 	if (!folderUri || folderUri.length === 0) {
-		vscode.window.showErrorMessage('No folder selected. Project creation cancelled.');
 		return;
 	}
 

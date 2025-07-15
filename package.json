@@ -17,7 +17,7 @@
     "configuration": {
       "title": "Pebble",
       "properties": {
-        "pebble-vscode.defaultPlatform": {
+        "pebble.defaultPlatform": {
           "type": "string",
           "enum": [
             "aplite",
@@ -35,7 +35,7 @@
           ],
           "description": "Default platform to run a project in the emulator."
         },
-        "pebble-vscode.phoneIp": {
+        "pebble.phoneIp": {
           "type": "string",
           "default": "",
           "description": "IP address of the phone connected to Pebble."
@@ -45,26 +45,26 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble-vscode.newProject)\nSettings\n[Change Emulator Platform](command:pebble-vscode.setDefaultPlatform)\n[Change Phone IP](command:pebble-vscode.setPhoneIp)",
+        "contents": "[New Project](command:pebble.newProject)\nSettings\n[Change Emulator Platform](command:pebble.setDefaultPlatform)\n[Change Phone IP](command:pebble.setPhoneIp)",
         "when": "pebbleProject"
       },
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble-vscode.newProject)",
+        "contents": "[New Project](command:pebble.newProject)",
         "when": "!pebbleProject"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "pebble-vscode",
+          "id": "pebble-container",
           "title": "Pebble",
           "icon": "resources/pebble-icon.svg"
         }
       ]
     },
     "views": {
-      "pebble-vscode": [
+      "pebble-container": [
         {
           "id": "backgroundTreeView",
           "name": "Pebble",
@@ -76,37 +76,37 @@
     },
     "commands": [
       {
-        "command": "pebble-vscode.newProject",
+        "command": "pebble.newProject",
         "title": "New Project",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.runEmulator",
+        "command": "pebble.runEmulator",
         "title": "Run on Emulator",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.runEmulatorLogs",
+        "command": "pebble.runEmulatorLogs",
         "title": "Run on Emulator with Logs",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.setDefaultPlatform",
+        "command": "pebble.setDefaultPlatform",
         "title": "Set Default Platform",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.runPhone",
+        "command": "pebble.runPhone",
         "title": "Run on Phone",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.runPhoneLogs",
+        "command": "pebble.runPhoneLogs",
         "title": "Run on Phone with Logs",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.setPhoneIp",
+        "command": "pebble.setPhoneIp",
         "title": "Set Phone IP",
         "category": "Pebble"
       }
@@ -114,22 +114,22 @@
     "menus": {
       "editor/title/run": [
         {
-          "command": "pebble-vscode.runEmulator",
+          "command": "pebble.runEmulator",
           "group": "navigation",
           "when": "pebbleProject"
         },
         {
-          "command": "pebble-vscode.runEmulatorLogs",
+          "command": "pebble.runEmulatorLogs",
           "group": "navigation",
           "when": "pebbleProject"
         },
         {
-          "command": "pebble-vscode.runPhone",
+          "command": "pebble.runPhone",
           "group": "navigation",
           "when": "pebbleProject"
         },
         {
-          "command": "pebble-vscode.runPhoneLogs",
+          "command": "pebble.runPhoneLogs",
           "group": "navigation",
           "when": "pebbleProject"
         }

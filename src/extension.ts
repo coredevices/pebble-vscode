@@ -18,45 +18,45 @@ export async function activate(context: vscode.ExtensionContext) {
 	// const provider = new PebbleViewProvider(context.extensionUri);
 
 	// context.subscriptions.push(
-	// 	vscode.window.registerWebviewViewProvider("pebble-vscode.pebbleView", provider));
+	// 	vscode.window.registerWebviewViewProvider("pebble.pebbleView", provider));
 
 	console.log('Pebble extension activated');
 
-	const newProject = vscode.commands.registerCommand('pebble-vscode.newProject', () => {
+	const newProject = vscode.commands.registerCommand('pebble.newProject', () => {
 		createProject();
 	});
 
-	const run = vscode.commands.registerCommand('pebble-vscode.runEmulator', async () => {
+	const run = vscode.commands.registerCommand('pebble.runEmulator', async () => {
 		runWithArgs();
 	});
 
-	const runWithLogs = vscode.commands.registerCommand('pebble-vscode.runEmulatorLogs', async () => {
+	const runWithLogs = vscode.commands.registerCommand('pebble.runEmulatorLogs', async () => {
 		runWithArgs('--logs');
 	});
 
-	const runOnPhone = vscode.commands.registerCommand('pebble-vscode.runPhone', async () => {
+	const runOnPhone = vscode.commands.registerCommand('pebble.runPhone', async () => {
 		runOnPhoneWithArgs();
 	});
 
-	const runOnPhoneWithLogs = vscode.commands.registerCommand('pebble-vscode.runOnPhoneWithLogs', async () => {
+	const runOnPhoneWithLogs = vscode.commands.registerCommand('pebble.runOnPhoneWithLogs', async () => {
 		runOnPhoneWithArgs('--logs');
 	});
 
-	const setDefaultPlatform = vscode.commands.registerCommand('pebble-vscode.setDefaultPlatform', async () => {
+	const setDefaultPlatform = vscode.commands.registerCommand('pebble.setDefaultPlatform', async () => {
 		const platform = await requestEmulatorPlatform();
 		if (!platform) {
 			return;
 		}
-		const config = vscode.workspace.getConfiguration('pebble-vscode');
+		const config = vscode.workspace.getConfiguration('pebble');
 		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
 	});
 
-	const setPhoneIp = vscode.commands.registerCommand('pebble-vscode.setPhoneIp', async () => {
+	const setPhoneIp = vscode.commands.registerCommand('pebble.setPhoneIp', async () => {
 		const phoneIp = await requestPhoneIp();
 		if (!phoneIp) {
 			return;
 		}
-		const config = vscode.workspace.getConfiguration('pebble-vscode');
+		const config = vscode.workspace.getConfiguration('pebble');
 		await config.update('phoneIp', phoneIp, vscode.ConfigurationTarget.Global);
 	});
 
@@ -99,7 +99,7 @@ async function runOnPhoneWithArgs(args = '') {
 
 async function getPhoneIp() {
 
-	const storedPhoneIp = vscode.workspace.getConfiguration('pebble-vscode').get<string>('phoneIp');
+	const storedPhoneIp = vscode.workspace.getConfiguration('pebble').get<string>('phoneIp');
 	if (storedPhoneIp) {
 		return storedPhoneIp;
 	}
@@ -115,7 +115,7 @@ async function getPhoneIp() {
 	});
 
 	if (setDefault === 'Yes') {
-		const config = vscode.workspace.getConfiguration('pebble-vscode');
+		const config = vscode.workspace.getConfiguration('pebble');
 		await config.update('phoneIp', phoneIp, vscode.ConfigurationTarget.Global);
 	}
 
@@ -233,7 +233,7 @@ async function createProject() {
 }
 
 async function getEmulatorPlatform() {
-	const defaultPlatform = vscode.workspace.getConfiguration('pebble-vscode').get<string>('defaultPlatform');
+	const defaultPlatform = vscode.workspace.getConfiguration('pebble').get<string>('defaultPlatform');
 
 	if (defaultPlatform) {
 		return defaultPlatform;
@@ -250,7 +250,7 @@ async function getEmulatorPlatform() {
 	});
 
 	if (setDefault === 'Yes') {
-		const config = vscode.workspace.getConfiguration('pebble-vscode');
+		const config = vscode.workspace.getConfiguration('pebble');
 		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
 	}
 

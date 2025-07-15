@@ -216,19 +216,26 @@ async function createProject() {
 		command += ' --javascript';
 	}
 
-	cp.exec(`${command} ${projectName}`, {
-		cwd: projectPath
-	}, (error, stdout, stderr) => {
-		if (error) {
-			vscode.window.showErrorMessage(`Error creating project: ${error.message}`);
-			return;
+	let terminal = vscode.window.terminals.find(t => t.name === `Pebble Run`);
+	if (!terminal) {
+		terminal = vscode.window.createTerminal(`Pebble Run`);
+	}
+
+	terminal.show();
+	terminal.sendText('\x03'); // Send Ctrl+C
+	terminal.sendText(`cd ${projectPath}`, true);
+	terminal.sendText(`${command} ${projectName}`, true);
+
+	const executionDisposable = vscode.window.onDidEndTerminalShellExecution((event) => {
+		if (event.terminal.name === `Pebble Run` && event.execution.commandLine.value === `${command} ${projectName}`) {
+			executionDisposable.dispose();
+
+			if (event.exitCode === 0) {
+				vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(`${projectPath}/${projectName}`));
+			} else {
+				vscode.window.showErrorMessage(`Error creating project. Exit code: ${event.exitCode}`);
+			}
 		}
-		if (stderr) {
-			vscode.window.showErrorMessage(`Error: ${stderr}`);
-			return;
-		}
-		vscode.window.showInformationMessage(`Project created successfully: ${stdout}`);
-		vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(`${projectPath}/${projectName}`));
 	});
 }
 

@@ -1,7 +1,7 @@
 {
   "name": "pebble-vscode",
-  "displayName": "pebble-vscode",
-  "description": "",
+  "displayName": "Pebble",
+  "description": "Pebble development tools for VS Code",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.99.3"

@@ -81,13 +81,13 @@
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.run",
-        "title": "Run Project",
+        "command": "pebble-vscode.runEmulator",
+        "title": "Run on Emulator",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.runWithLogs",
-        "title": "Run Project with Logs",
+        "command": "pebble-vscode.runEmulatorLogs",
+        "title": "Run on Emulator with Logs",
         "category": "Pebble"
       },
       {
@@ -96,13 +96,13 @@
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.runOnPhone",
-        "title": "Run Project on Phone",
+        "command": "pebble-vscode.runPhone",
+        "title": "Run on Phone",
         "category": "Pebble"
       },
       {
-        "command": "pebble-vscode.runOnPhoneWithLogs",
-        "title": "Run Project on Phone with Logs",
+        "command": "pebble-vscode.runPhoneLogs",
+        "title": "Run on Phone with Logs",
         "category": "Pebble"
       },
       {
@@ -114,12 +114,22 @@
     "menus": {
       "editor/title/run": [
         {
-          "command": "pebble-vscode.run",
+          "command": "pebble-vscode.runEmulator",
           "group": "navigation",
           "when": "pebbleProject"
         },
         {
-          "command": "pebble-vscode.runWithLogs",
+          "command": "pebble-vscode.runEmulatorLogs",
+          "group": "navigation",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble-vscode.runPhone",
+          "group": "navigation",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble-vscode.runPhoneLogs",
           "group": "navigation",
           "when": "pebbleProject"
         }

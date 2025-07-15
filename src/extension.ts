@@ -26,15 +26,15 @@ export async function activate(context: vscode.ExtensionContext) {
 		createProject();
 	});
 
-	const run = vscode.commands.registerCommand('pebble-vscode.run', async () => {
+	const run = vscode.commands.registerCommand('pebble-vscode.runEmulator', async () => {
 		runWithArgs();
 	});
 
-	const runWithLogs = vscode.commands.registerCommand('pebble-vscode.runWithLogs', async () => {
+	const runWithLogs = vscode.commands.registerCommand('pebble-vscode.runEmulatorLogs', async () => {
 		runWithArgs('--logs');
 	});
 
-	const runOnPhone = vscode.commands.registerCommand('pebble-vscode.runOnPhone', async () => {
+	const runOnPhone = vscode.commands.registerCommand('pebble-vscode.runPhone', async () => {
 		runOnPhoneWithArgs();
 	});
 

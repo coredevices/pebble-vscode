@@ -1,8 +1,10 @@
 {
   "name": "pebble-vscode",
   "displayName": "Pebble",
-  "description": "Pebble development tools for VS Code",
+  "description": "Development tools for Pebble apps",
   "version": "0.0.1",
+  "publisher": "coredevices",
+  "icon": "resources/icon.png",
   "engines": {
     "vscode": "^1.99.3"
   },
@@ -63,7 +65,7 @@
         {
           "id": "pebble-container",
           "title": "Pebble",
-          "icon": "resources/pebble-icon.svg"
+          "icon": "resources/pebble-icon.png"
         }
       ]
     },

@@ -17,15 +17,15 @@ Terminal-style interface in the command bar.
 ![Command Bar](images/command-bar.png)
 
 Take any action from the VS Code command palette.
-
-
+![Command Palette](images/command-palette.png)
 
 ## Requirements
 
+You'll need the `pebble` command-line tool installed. If you don't have it, check out the instructions in the Pebble SDK documentation.
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
-* `pebble.defaultPlatform`: Set the default platform to emulate.
+* `pebble.defaultPlatform`: Set the default emulator platform.
 * `pebble.phoneIp`: Set the default phone IP.

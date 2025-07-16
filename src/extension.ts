@@ -6,6 +6,7 @@ import { PebbleViewProvider } from './pebbleViewProvider';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
 import { platform } from 'os';
 import * as os from 'os';
+import * as path from 'path';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -23,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	console.log('Pebble extension activated');
 
 	const newProject = vscode.commands.registerCommand('pebble.newProject', () => {
-		createProject();
+		createProject(context);
 	});
 
 	const run = vscode.commands.registerCommand('pebble.runEmulator', async () => {
@@ -74,6 +75,15 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
+
+async function storeLastPath(context: vscode.ExtensionContext, folderPath: string) {
+	console.log(`Storing last path: ${folderPath}`);
+	await context.globalState.update('lastPath', folderPath);
+}
+
+function getLastPath(context: vscode.ExtensionContext): string | undefined {
+	return context.globalState.get<string>('lastPath');
+}
 
 async function runOnPhoneWithArgs(args = '') {
 	const workspacePath = getWorkspacePath();
@@ -178,7 +188,7 @@ function getWorkspacePath(): string | undefined {
 	return workspacePath;
 }
 
-async function createProject() {
+async function createProject(context: vscode.ExtensionContext) {
 
 	const projectTypeObject = await vscode.window.showQuickPick([
 		{
@@ -211,20 +221,29 @@ async function createProject() {
 		return;
 	}
 
-	const folderUri = await vscode.window.showOpenDialog({
+	const options: vscode.OpenDialogOptions = {
 		canSelectFiles: false,
 		canSelectFolders: true,
 		canSelectMany: false,
-		openLabel: 'Create project here',
+		openLabel: 'Create here',
 		title: 'Create a new Pebble project',
 		defaultUri: vscode.Uri.file(os.homedir())
-	});
+	};
+
+	const lastPath = getLastPath(context);
+	if (lastPath) {
+		options.defaultUri = vscode.Uri.file(lastPath);
+	}
+
+	const folderUri = await vscode.window.showOpenDialog(options);
 
 	if (!folderUri || folderUri.length === 0) {
 		return;
 	}
 
 	const projectPath = folderUri[0].fsPath;
+
+	await storeLastPath(context, projectPath);
 
 	let command = 'pebble new-project --c';
 	if (projectType === 'C Simple') {

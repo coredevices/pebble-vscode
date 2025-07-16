@@ -18,3 +18,19 @@ export async function storeLastPath(context: vscode.ExtensionContext, folderPath
 export function getLastPath(context: vscode.ExtensionContext): string | undefined {
     return context.globalState.get<string>('lastPath');
 }
+
+export async function isPebbleProject() : Promise<boolean> {
+	if (!vscode.workspace.workspaceFolders) {
+		return false;
+	}
+
+	const packageJsonUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'package.json');
+
+	try {
+		const fileContent = await vscode.workspace.fs.readFile(packageJsonUri);
+		const packageJson = JSON.parse(fileContent.toString());
+		return 'pebble' in packageJson;
+	} catch {
+		return false;
+	}
+}

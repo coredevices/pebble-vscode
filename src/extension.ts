@@ -179,12 +179,29 @@ function getWorkspacePath(): string | undefined {
 }
 
 async function createProject() {
-	const projectType = await vscode.window.showQuickPick(['C (default)', 'C basic', 'C and JS'], {
+
+	const projectTypeObject = await vscode.window.showQuickPick([
+		{
+			label: 'C',
+			detail: 'Default',
+		},
+		{
+			label: 'C Simple',
+			detail: 'Minimal',
+		},
+		{
+			label: 'C and JS',
+			detail: 'With PebbleKitJS',
+		}
+	], {
+		"placeHolder": "Choose a project type"
 	});
 
-	if (!projectType) {
+	if (!projectTypeObject) {
 		return;
 	}
+
+	const projectType = projectTypeObject.label;
 
 	const projectName = await vscode.window.showInputBox({
 		prompt: 'Enter the name of the new project',
@@ -210,7 +227,7 @@ async function createProject() {
 	const projectPath = folderUri[0].fsPath;
 
 	let command = 'pebble new-project --c';
-	if (projectType === 'C simple') {
+	if (projectType === 'C Simple') {
 		command += ' --simple';
 	} else if (projectType === 'C and JS') {
 		command += ' --javascript';

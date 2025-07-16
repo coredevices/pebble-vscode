@@ -6,6 +6,10 @@
   "engines": {
     "vscode": "^1.99.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coredevices/pebble-vscode"
+  },
   "categories": [
     "Other"
   ],

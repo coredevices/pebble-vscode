@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import { get } from 'http';
 import * as fs from 'fs';
-import { PebbleViewProvider } from './pebbleViewProvider';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
 import { platform } from 'os';
 import * as os from 'os';
@@ -15,11 +14,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	} else {
 		vscode.commands.executeCommand('setContext', 'pebbleProject', false);
 	}
-
-	// const provider = new PebbleViewProvider(context.extensionUri);
-
-	// context.subscriptions.push(
-	// 	vscode.window.registerWebviewViewProvider("pebble.pebbleView", provider));
 
 	console.log('Pebble extension activated');
 

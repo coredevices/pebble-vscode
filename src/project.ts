@@ -88,3 +88,7 @@ export async function createProject(context: vscode.ExtensionContext) {
 		}
 	});
 }
+
+export async function openProject() {
+	vscode.commands.executeCommand('workbench.action.files.openFolder');
+}

@@ -45,12 +45,12 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\nSettings\n[Change Emulator Platform](command:pebble.setDefaultPlatform)\n[Change Phone IP](command:pebble.setPhoneIp)",
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nSettings\n[Change Emulator Platform](command:pebble.setDefaultPlatform)\n[Change Phone IP](command:pebble.setPhoneIp)",
         "when": "pebbleProject"
       },
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)",
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)",
         "when": "!pebbleProject"
       }
     ],
@@ -108,6 +108,11 @@
       {
         "command": "pebble.setPhoneIp",
         "title": "Set Phone IP",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.openProject",
+        "title": "Open Project",
         "category": "Pebble"
       }
     ],

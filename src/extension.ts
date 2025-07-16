@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
 import { requestEmulatorPlatform, runWithArgs, requestPhoneIp, runOnPhoneWithArgs } from './run';
-import { createProject } from './project';
+import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -13,8 +13,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'pebbleProject', false);
 	}
 
-	const newProject = vscode.commands.registerCommand('pebble.newProject', () => {
+	const newProjectDisposable = vscode.commands.registerCommand('pebble.newProject', () => {
 		createProject(context);
+	});
+
+	const openProjectDisposable = vscode.commands.registerCommand('pebble.openProject', async () => {
+		openProject();
 	});
 
 	const run = vscode.commands.registerCommand('pebble.runEmulator', async () => {
@@ -56,7 +60,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		treeDataProvider: treeDataProvider
 	});
 
-	context.subscriptions.push(newProject, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, treeView);
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, treeView);
 }
 
 export function deactivate() {}

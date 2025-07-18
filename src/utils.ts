@@ -48,26 +48,3 @@ export async function isPebbleSdkInstalled(): Promise<boolean> {
 		return false;
 	}
 }
-
-export async function installPebbleSdk(): Promise<void> {
-	let terminal = vscode.window.terminals.find(t => t.name === `Pebble Run`);
-	if (!terminal) {
-		terminal = vscode.window.createTerminal(`Pebble Run`);
-	}
-
-	terminal.show();
-	terminal.sendText('\x03'); // Send Ctrl+C
-	terminal.sendText(`pebble sdk install latest`, true);
-
-	const executionDisposable = vscode.window.onDidEndTerminalShellExecution((event) => {
-		if (event.terminal.name === `Pebble Run` && event.execution.commandLine.value === `pebble sdk install latest`) {
-			executionDisposable.dispose();
-
-			if (event.exitCode === 0) {
-				vscode.window.showInformationMessage(`Pebble SDK installed successfully.`);
-			} else {
-				vscode.window.showErrorMessage(`Error creating project. Exit code: ${event.exitCode}`);
-			}
-		}
-	});
-}

@@ -106,7 +106,6 @@ export async function createProject(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage(`Error: ${stderr}`);
 			return;
 		}
-		vscode.window.showInformationMessage(`Project created successfully: ${stdout}`);
 		vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(`${projectPath}/${projectName}`));
 	});
 }

@@ -122,8 +122,22 @@
         "category": "Pebble"
       }
     ],
+    "submenus": [
+      {
+        "id": "pebble.runMenu",
+        "label": "Run Pebble",
+        "icon": "$(watch)"
+      }
+    ],
     "menus": {
-      "editor/title/run": [
+      "editor/title": [
+        {
+          "submenu": "pebble.runMenu",
+          "when": "pebbleProject",
+          "group": "navigation"
+        }
+      ],
+      "pebble.runMenu": [
         {
           "command": "pebble.runEmulator",
           "group": "navigation",

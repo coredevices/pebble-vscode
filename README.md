@@ -2,6 +2,10 @@
 
 This extension provides a development environment for Pebble apps and watchfaces. Rather than running commands using the `pebble` CLI, you can access those via buttons in the VSCode interface.
 
+## Installation
+
+Download it from the VS Code Extension Marketplace.
+
 ## Features
 
 Run button at the top of each Pebble project file.
@@ -29,3 +33,9 @@ This extension contributes the following settings:
 
 * `pebble.defaultPlatform`: Set the default emulator platform.
 * `pebble.phoneIp`: Set the default phone IP.
+
+## Building
+
+To develop this extension, open this folder in VS Code, then select Run -> Start Debugging.
+
+To package this extension into an installable binary, run `vsce package`.

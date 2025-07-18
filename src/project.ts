@@ -64,6 +64,7 @@ export async function createProject(context: vscode.ExtensionContext) {
 	}
 
 	const projectPath = folderUri[0].fsPath;
+	console.log(`Creating project at: ${projectPath}`);
 
 	await storeLastPath(context, projectPath);
 
@@ -84,12 +85,12 @@ export async function createProject(context: vscode.ExtensionContext) {
 	
 		terminal.show();
 		terminal.sendText('\x03'); // Send Ctrl+C
-		terminal.sendText(`cd ${projectPath}`, true);
-		terminal.sendText(`${command} ${projectName}`, true);
+		terminal.sendText(`cd "${projectPath}"`, true);
+		terminal.sendText(`${command} "${projectName}"`, true);
 
 		// onDidEndTerminalShellExecution isn't working fully reliably
 		const executionDisposable = vscode.window.onDidEndTerminalShellExecution((event) => {
-			if (event.terminal.name === `Pebble Run` && event.execution.commandLine.value === `${command} ${projectName}`) {
+			if (event.terminal.name === `Pebble Run` && event.execution.commandLine.value === `${command} "${projectName}"`) {
 				executionDisposable.dispose();
 
 				if (event.exitCode === 0) {
@@ -102,7 +103,7 @@ export async function createProject(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	cp.exec(`${command} ${projectName}`, {
+	cp.exec(`${command} "${projectName}"`, {
 		cwd: projectPath
 	}, (error, stdout, stderr) => {
 		if (error) {

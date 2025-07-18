@@ -126,22 +126,22 @@
       "editor/title/run": [
         {
           "command": "pebble.runEmulator",
-          "group": "navigation",
+          "group": "navigation@-1",
           "when": "pebbleProject"
         },
         {
           "command": "pebble.runEmulatorLogs",
-          "group": "navigation",
+          "group": "navigation@-1",
           "when": "pebbleProject"
         },
         {
           "command": "pebble.runPhone",
-          "group": "navigation",
+          "group": "navigation@-1",
           "when": "pebbleProject"
         },
         {
           "command": "pebble.runPhoneLogs",
-          "group": "navigation",
+          "group": "navigation@-1",
           "when": "pebbleProject"
         }
       ],

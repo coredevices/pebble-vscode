@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as os from 'os';
-import { storeLastPath, getLastPath } from './utils';
+import { storeLastPath, getLastPath, isPebbleSdkInstalled } from './utils';
+import * as cp from 'child_process';
 
 export async function createProject(context: vscode.ExtensionContext) {
 
@@ -66,26 +67,47 @@ export async function createProject(context: vscode.ExtensionContext) {
 		command += ' --javascript';
 	}
 
-	let terminal = vscode.window.terminals.find(t => t.name === `Pebble Run`);
-	if (!terminal) {
-		terminal = vscode.window.createTerminal(`Pebble Run`);
+	const sdkInstalled = await isPebbleSdkInstalled();
+	console.log("Pebble SDK installed:", sdkInstalled);
+	if (!sdkInstalled) {
+		let terminal = vscode.window.terminals.find(t => t.name === `Pebble Run`);
+		if (!terminal) {
+			terminal = vscode.window.createTerminal(`Pebble Run`);
+		}
+	
+		terminal.show();
+		terminal.sendText('\x03'); // Send Ctrl+C
+		terminal.sendText(`cd ${projectPath}`, true);
+		terminal.sendText(`${command} ${projectName}`, true);
+
+		// onDidEndTerminalShellExecution isn't working fully reliably
+		const executionDisposable = vscode.window.onDidEndTerminalShellExecution((event) => {
+			if (event.terminal.name === `Pebble Run` && event.execution.commandLine.value === `${command} ${projectName}`) {
+				executionDisposable.dispose();
+
+				if (event.exitCode === 0) {
+					vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(`${projectPath}/${projectName}`));
+				} else {
+					vscode.window.showErrorMessage(`Error creating project. Exit code: ${event.exitCode}`);
+				}
+			}
+		});
+		return;
 	}
 
-	terminal.show();
-	terminal.sendText('\x03'); // Send Ctrl+C
-	terminal.sendText(`cd ${projectPath}`, true);
-	terminal.sendText(`${command} ${projectName}`, true);
-
-	const executionDisposable = vscode.window.onDidEndTerminalShellExecution((event) => {
-		if (event.terminal.name === `Pebble Run` && event.execution.commandLine.value === `${command} ${projectName}`) {
-			executionDisposable.dispose();
-
-			if (event.exitCode === 0) {
-				vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(`${projectPath}/${projectName}`));
-			} else {
-				vscode.window.showErrorMessage(`Error creating project. Exit code: ${event.exitCode}`);
-			}
+	cp.exec(`${command} ${projectName}`, {
+		cwd: projectPath
+	}, (error, stdout, stderr) => {
+		if (error) {
+			vscode.window.showErrorMessage(`Error creating project: ${error.message}`);
+			return;
 		}
+		if (stderr) {
+			vscode.window.showErrorMessage(`Error: ${stderr}`);
+			return;
+		}
+		vscode.window.showInformationMessage(`Project created successfully: ${stdout}`);
+		vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(`${projectPath}/${projectName}`));
 	});
 }
 

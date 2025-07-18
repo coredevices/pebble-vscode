@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 export function getWorkspacePath(): string | undefined {
     const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -33,4 +35,39 @@ export async function isPebbleProject() : Promise<boolean> {
 	} catch {
 		return false;
 	}
+}
+
+const execAsync = promisify(exec);
+
+export async function isPebbleSdkInstalled(): Promise<boolean> {
+	try {
+		const { stdout } = await execAsync('pebble sdk list');
+		return stdout.includes('Installed SDKs:') && !stdout.includes('No SDKs installed yet.');
+	} catch (error) {
+		// If pebble command doesn't exist or fails, SDK is not installed
+		return false;
+	}
+}
+
+export async function installPebbleSdk(): Promise<void> {
+	let terminal = vscode.window.terminals.find(t => t.name === `Pebble Run`);
+	if (!terminal) {
+		terminal = vscode.window.createTerminal(`Pebble Run`);
+	}
+
+	terminal.show();
+	terminal.sendText('\x03'); // Send Ctrl+C
+	terminal.sendText(`pebble sdk install latest`, true);
+
+	const executionDisposable = vscode.window.onDidEndTerminalShellExecution((event) => {
+		if (event.terminal.name === `Pebble Run` && event.execution.commandLine.value === `pebble sdk install latest`) {
+			executionDisposable.dispose();
+
+			if (event.exitCode === 0) {
+				vscode.window.showInformationMessage(`Pebble SDK installed successfully.`);
+			} else {
+				vscode.window.showErrorMessage(`Error creating project. Exit code: ${event.exitCode}`);
+			}
+		}
+	});
 }

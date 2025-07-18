@@ -3,20 +3,27 @@ import * as os from 'os';
 import { storeLastPath, getLastPath, isPebbleSdkInstalled } from './utils';
 import * as cp from 'child_process';
 
+interface ProjectTypeItem extends vscode.QuickPickItem {
+	id: string;
+}
+
 export async function createProject(context: vscode.ExtensionContext) {
 
-	const projectTypeObject = await vscode.window.showQuickPick([
+	const projectTypeObject = await vscode.window.showQuickPick<ProjectTypeItem>([
 		{
 			label: 'C',
 			detail: 'Default',
+			id: 'c'
 		},
 		{
-			label: 'C Simple',
+			label: 'C simple',
 			detail: 'Minimal',
+			id: 'c-simple'
 		},
 		{
-			label: 'C and JS',
+			label: 'C and phone-side JS',
 			detail: 'With PebbleKitJS',
+			id: 'c-pkjs'
 		}
 	], {
 		"placeHolder": "Choose a project type"
@@ -26,7 +33,7 @@ export async function createProject(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	const projectType = projectTypeObject.label;
+	const projectType = projectTypeObject.id;
 
 	const projectName = await vscode.window.showInputBox({
 		prompt: 'Enter the name of the new project',
@@ -61,9 +68,9 @@ export async function createProject(context: vscode.ExtensionContext) {
 	await storeLastPath(context, projectPath);
 
 	let command = 'pebble new-project --c';
-	if (projectType === 'C Simple') {
+	if (projectType === 'c-simple') {
 		command += ' --simple';
-	} else if (projectType === 'C and JS') {
+	} else if (projectType === 'c-pkjs') {
 		command += ' --javascript';
 	}
 

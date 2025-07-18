@@ -144,6 +144,24 @@
           "group": "navigation",
           "when": "pebbleProject"
         }
+      ],
+      "commandPalette": [
+        {
+          "command": "pebble.runEmulator",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.runEmulatorLogs",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.runPhone",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.runPhoneLogs",
+          "when": "pebbleProject"
+        }
       ]
     }
   },

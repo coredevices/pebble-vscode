@@ -33,9 +33,14 @@ export async function activate(context: vscode.ExtensionContext) {
 			webviewPanel.onDidDispose(() => {
 				webviewPanel = undefined;
 			});
+
+			// Lock the editor group to prevent files from opening in the preview column
+			setTimeout(() => {
+				vscode.commands.executeCommand('workbench.action.lockEditorGroup');
+			}, 50);
 		} else {
-			// If panel exists but is not visible, reveal it
-			webviewPanel.reveal(vscode.ViewColumn.Two);
+			// If panel exists but is not visible, reveal it without taking focus
+			webviewPanel.reveal(vscode.ViewColumn.Two, true);
 		}
 	}
 

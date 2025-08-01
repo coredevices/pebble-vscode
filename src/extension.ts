@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
 import { requestEmulatorPlatform, runWithArgs, requestPhoneIp, runOnPhoneWithArgs } from './run';
 import { createProject, openProject } from './project';
@@ -7,8 +9,52 @@ import { isPebbleProject } from './utils';
 export async function activate(context: vscode.ExtensionContext) {
 	console.log('Pebble extension activated');
 
+	let webviewPanel: vscode.WebviewPanel | undefined;
+
 	if (await isPebbleProject()) {
 		vscode.commands.executeCommand('setContext', 'pebbleProject', true);
+		
+		// Create webview panel when in a Pebble project
+		webviewPanel = vscode.window.createWebviewPanel(
+			'pebblePreview',
+			'Pebble Preview',
+			vscode.ViewColumn.Two,
+			{
+				enableScripts: true,
+				retainContextWhenHidden: true
+			}
+		);
+
+		// Set HTML content
+		const htmlPath = path.join(context.extensionPath, 'src', 'webview.html');
+		const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+		webviewPanel.webview.html = htmlContent;
+
+		// Clean up when panel is closed
+		webviewPanel.onDidDispose(() => {
+			webviewPanel = undefined;
+		});
+
+		// Recreate webview if user opens a file and it's closed
+		vscode.workspace.onDidOpenTextDocument(() => {
+			if (!webviewPanel || webviewPanel.visible === false) {
+				webviewPanel = vscode.window.createWebviewPanel(
+					'pebblePreview',
+					'Pebble Preview',
+					vscode.ViewColumn.Two,
+					{
+						enableScripts: true,
+						retainContextWhenHidden: true
+					}
+				);
+				const htmlPath = path.join(context.extensionPath, 'src', 'webview.html');
+				const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+				webviewPanel.webview.html = htmlContent;
+				webviewPanel.onDidDispose(() => {
+					webviewPanel = undefined;
+				});
+			}
+		});
 	} else {
 		vscode.commands.executeCommand('setContext', 'pebbleProject', false);
 	}

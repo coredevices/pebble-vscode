@@ -78,6 +78,16 @@
           "contextualTitle": "Pebble Projects",
           "icon": "$(file-code)"
         }
+      ],
+      "explorer": [
+        {
+          "id": "pebblePreviewSidebar",
+          "name": "Emulator Preview",
+          "type": "webview",
+          "contextualTitle": "Pebble Emulator",
+          "icon": "$(device-mobile)",
+          "when": "pebbleProject"
+        }
       ]
     },
     "commands": [
@@ -120,6 +130,16 @@
         "command": "pebble.openProject",
         "title": "Open Project",
         "category": "Pebble"
+      },
+      {
+        "command": "pebble.showSidebarPreview",
+        "title": "Show Sidebar Preview",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.showEditorPreview",
+        "title": "Show Editor Preview",
+        "category": "Pebble"
       }
     ],
     "menus": {
@@ -160,6 +180,14 @@
         },
         {
           "command": "pebble.runPhoneLogs",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.showSidebarPreview",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.showEditorPreview",
           "when": "pebbleProject"
         }
       ]

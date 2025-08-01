@@ -6,42 +6,65 @@ import { requestEmulatorPlatform, runWithArgs, requestPhoneIp, runOnPhoneWithArg
 import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
+class PebblePreviewProvider implements vscode.WebviewViewProvider {
+	public static readonly viewType = 'pebblePreviewSidebar';
+
+	private _view?: vscode.WebviewView;
+
+	constructor(
+		private readonly _extensionUri: vscode.Uri,
+	) { }
+
+	public resolveWebviewView(
+		webviewView: vscode.WebviewView,
+		_context: vscode.WebviewViewResolveContext,
+		_token: vscode.CancellationToken,
+	) {
+		this._view = webviewView;
+
+		webviewView.webview.options = {
+			// Allow scripts in the webview
+			enableScripts: true,
+			localResourceRoots: [
+				this._extensionUri
+			]
+		};
+
+		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+	}
+
+	public show() {
+		if (this._view) {
+			this._view.show?.(true);
+		}
+	}
+
+	private _getHtmlForWebview(webview: vscode.Webview) {
+		// Get the local path to the webview HTML
+		const htmlPath = path.join(this._extensionUri.fsPath, 'src', 'webview.html');
+		const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+		return htmlContent;
+	}
+}
+
 export async function activate(context: vscode.ExtensionContext) {
 	console.log('Pebble extension activated');
 
 	let webviewPanel: vscode.WebviewPanel | undefined;
 
+	// Register the webview view provider for sidebar
+	const sidebarProvider = new PebblePreviewProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(PebblePreviewProvider.viewType, sidebarProvider)
+	);
+
 	// Helper function to create or show the preview panel
 	function createOrShowPreview() {
-		if (!webviewPanel || webviewPanel.visible === false) {
-			webviewPanel = vscode.window.createWebviewPanel(
-				'pebblePreview',
-				'Pebble Preview',
-				vscode.ViewColumn.Two,
-				{
-					enableScripts: true,
-					retainContextWhenHidden: true
-				}
-			);
-
-			// Set HTML content
-			const htmlPath = path.join(context.extensionPath, 'src', 'webview.html');
-			const htmlContent = fs.readFileSync(htmlPath, 'utf8');
-			webviewPanel.webview.html = htmlContent;
-
-			// Clean up when panel is closed
-			webviewPanel.onDidDispose(() => {
-				webviewPanel = undefined;
-			});
-
-			// Lock the editor group to prevent files from opening in the preview column
-			setTimeout(() => {
-				vscode.commands.executeCommand('workbench.action.lockEditorGroup');
-			}, 50);
-		} else {
-			// If panel exists but is not visible, reveal it without taking focus
-			webviewPanel.reveal(vscode.ViewColumn.Two, true);
-		}
+		// Show compact sidebar preview by default (saves space)
+		sidebarProvider.show();
+		
+		// Note: Users can manually open the full editor preview using 
+		// "Pebble: Show Editor Preview" command if they want the larger view
 	}
 
 	if (await isPebbleProject()) {
@@ -66,6 +89,39 @@ export async function activate(context: vscode.ExtensionContext) {
 	const runWithLogs = vscode.commands.registerCommand('pebble.runEmulatorLogs', async () => {
 		createOrShowPreview();
 		runWithArgs('--logs');
+	});
+
+	// Additional commands for controlling preview views
+	const showSidebarPreview = vscode.commands.registerCommand('pebble.showSidebarPreview', () => {
+		sidebarProvider.show();
+	});
+
+	const showEditorPreview = vscode.commands.registerCommand('pebble.showEditorPreview', () => {
+		if (!webviewPanel || webviewPanel.visible === false) {
+			webviewPanel = vscode.window.createWebviewPanel(
+				'pebblePreview',
+				'Pebble Preview',
+				vscode.ViewColumn.Two,
+				{
+					enableScripts: true,
+					retainContextWhenHidden: true
+				}
+			);
+
+			const htmlPath = path.join(context.extensionPath, 'src', 'webview.html');
+			const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+			webviewPanel.webview.html = htmlContent;
+
+			webviewPanel.onDidDispose(() => {
+				webviewPanel = undefined;
+			});
+
+			setTimeout(() => {
+				vscode.commands.executeCommand('workbench.action.lockEditorGroup');
+			}, 50);
+		} else {
+			webviewPanel.reveal(vscode.ViewColumn.Two, true);
+		}
 	});
 
 	const runOnPhone = vscode.commands.registerCommand('pebble.runPhone', async () => {
@@ -99,7 +155,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		treeDataProvider: treeDataProvider
 	});
 
-	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, treeView);
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, treeView, showSidebarPreview, showEditorPreview);
 }
 
 export function deactivate() {}

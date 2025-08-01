@@ -67,7 +67,7 @@ export async function runWithArgs(args = '') {
 
     terminal.show();
     terminal.sendText('\x03'); // Send Ctrl+C
-    terminal.sendText(`pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''}`, true);
+    terminal.sendText(`pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
 }
 
 export async function getPhoneIp() {

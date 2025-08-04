@@ -82,7 +82,7 @@
       "explorer": [
         {
           "id": "pebblePreviewSidebar",
-          "name": "Emulator Preview",
+          "name": "Pebble Emulator",
           "type": "webview",
           "contextualTitle": "Pebble Emulator",
           "icon": "$(device-mobile)",

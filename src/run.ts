@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWorkspacePath } from './utils';
+import { getWorkspacePath, getPebbleVersionInfo } from './utils';
 
 export async function getEmulatorPlatform() {
 	const defaultPlatform = vscode.workspace.getConfiguration('pebble').get<string>('defaultPlatform');
@@ -49,6 +49,10 @@ export async function requestEmulatorPlatform() {
 }
 
 export async function runOnEmulatorWithArgs(args = '') {
+    // Check SDK version first
+    const versionInfo = await getPebbleVersionInfo();
+    const needsSdkInstall = !versionInfo.sdkVersion || versionInfo.sdkVersion === '4.4';
+    
     const platform = await getEmulatorPlatform();
     if (!platform) {
         return;
@@ -67,7 +71,14 @@ export async function runOnEmulatorWithArgs(args = '') {
 
     terminal.show();
     terminal.sendText('\x03'); // Send Ctrl+C
-    terminal.sendText(`pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
+    
+    // Install latest SDK if needed, then build and run
+    if (needsSdkInstall) {
+        vscode.window.showInformationMessage('Installing the latest Pebble SDK.');
+        terminal.sendText(`pebble sdk install latest && pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
+    } else {
+        terminal.sendText(`pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
+    }
 }
 
 export async function getPhoneIp() {

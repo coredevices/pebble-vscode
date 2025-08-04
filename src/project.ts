@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as os from 'os';
-import { storeLastPath, getLastPath, isPebbleSdkInstalled } from './utils';
+import { storeLastPath, getLastPath, isPebbleSdkInstalled, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool } from './utils';
 import * as cp from 'child_process';
 
 interface ProjectTypeItem extends vscode.QuickPickItem {
@@ -67,6 +67,16 @@ export async function createProject(context: vscode.ExtensionContext) {
 	console.log(`Creating project at: ${projectPath}`);
 
 	await storeLastPath(context, projectPath);
+	
+	const versionInfo = await getPebbleVersionInfo();
+	console.log('Version info:', versionInfo);
+	
+	if (versionInfo.toolVersion && isVersionBelow(versionInfo.toolVersion, 5, 0, 6)) {
+		const upgraded = await upgradePebbleTool();
+		if (!upgraded) {
+			return;
+		}
+	}
 
 	let command = 'pebble new-project --c';
 	if (projectType === 'c-simple') {

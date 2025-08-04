@@ -49,8 +49,11 @@ export async function requestEmulatorPlatform() {
 }
 
 export async function runOnEmulatorWithArgs(args = '') {
+    console.log('runOnEmulatorWithArgs called with args:', args);
+    
     // Check Pebble tool and SDK versions
     const versionInfo = await getPebbleVersionInfo();
+    console.log('Version info:', versionInfo);
     
     // Automatically upgrade Pebble tool if version is too old for --vnc support
     if (versionInfo.toolVersion && isVersionBelow(versionInfo.toolVersion, 5, 0, 6)) {
@@ -65,8 +68,10 @@ export async function runOnEmulatorWithArgs(args = '') {
     
     const platform = await getEmulatorPlatform();
     if (!platform) {
+        console.log('No platform selected, returning early');
         return;
     }
+    console.log('Platform selected:', platform);
 
     const workspacePath = getWorkspacePath();
     if (!workspacePath) {

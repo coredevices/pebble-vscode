@@ -7,7 +7,7 @@ import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
 class PebblePreviewProvider implements vscode.WebviewViewProvider {
-	public static readonly viewType = 'pebblePreviewSidebar';
+	public static readonly viewType = 'pebbleEmulatorSidebar';
 
 	private _view?: vscode.WebviewView;
 
@@ -66,8 +66,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	function showEditorPreview() {
 		if (!webviewPanel || webviewPanel.visible === false) {
 			webviewPanel = vscode.window.createWebviewPanel(
-				'pebblePreview',
-				'Pebble Preview',
+				'pebbleEmulator',
+				'Pebble Emulator',
 				vscode.ViewColumn.Two,
 				{
 					enableScripts: true,

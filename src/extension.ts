@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
-import { requestEmulatorPlatform, runWithArgs, requestPhoneIp, runOnPhoneWithArgs } from './run';
+import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs } from './run';
 import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
@@ -83,12 +83,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const run = vscode.commands.registerCommand('pebble.runEmulator', async () => {
 		createOrShowPreview();
-		runWithArgs();
+		runOnEmulatorWithArgs();
 	});
 
 	const runWithLogs = vscode.commands.registerCommand('pebble.runEmulatorLogs', async () => {
 		createOrShowPreview();
-		runWithArgs('--logs');
+		runOnEmulatorWithArgs('--logs');
 	});
 
 	// Additional commands for controlling preview views

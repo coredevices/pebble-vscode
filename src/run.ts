@@ -48,7 +48,7 @@ export async function requestEmulatorPlatform() {
 	return platform;
 }
 
-export async function runWithArgs(args = '') {
+export async function runOnEmulatorWithArgs(args = '') {
     const platform = await getEmulatorPlatform();
     if (!platform) {
         return;

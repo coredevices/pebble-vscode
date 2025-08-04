@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWorkspacePath, getPebbleVersionInfo } from './utils';
+import { getWorkspacePath, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool } from './utils';
 
 export async function getEmulatorPlatform() {
 	const defaultPlatform = vscode.workspace.getConfiguration('pebble').get<string>('defaultPlatform');
@@ -49,8 +49,18 @@ export async function requestEmulatorPlatform() {
 }
 
 export async function runOnEmulatorWithArgs(args = '') {
-    // Check SDK version first
+    // Check Pebble tool and SDK versions
     const versionInfo = await getPebbleVersionInfo();
+    
+    // Automatically upgrade Pebble tool if version is too old for --vnc support
+    if (versionInfo.toolVersion && isVersionBelow(versionInfo.toolVersion, 5, 0, 6)) {
+        const upgraded = await upgradePebbleTool();
+        if (!upgraded) {
+            // Upgrade failed, don't continue
+            return;
+        }
+    }
+    
     const needsSdkInstall = !versionInfo.sdkVersion || versionInfo.sdkVersion === '4.4';
     
     const platform = await getEmulatorPlatform();

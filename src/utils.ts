@@ -74,3 +74,45 @@ export async function isPebbleSdkInstalled(): Promise<boolean> {
 	// SDK is installed if we have an SDK version
 	return versionInfo.sdkVersion !== null;
 }
+
+export function isVersionBelow(version: string | null, targetMajor: number, targetMinor: number = 0, targetPatch: number = 0): boolean {
+	if (!version) {
+		return true; // No version means it's "below" any target
+	}
+	
+	const versionParts = version.split('.').map(v => parseInt(v, 10));
+	const major = versionParts[0] || 0;
+	const minor = versionParts[1] || 0;
+	const patch = versionParts[2] || 0;
+	
+	if (major < targetMajor) return true;
+	if (major > targetMajor) return false;
+	
+	if (minor < targetMinor) return true;
+	if (minor > targetMinor) return false;
+	
+	return patch < targetPatch;
+}
+
+export async function upgradePebbleTool(): Promise<boolean> {
+	vscode.window.showInformationMessage('Upgrading Pebble Tool');
+	
+	try {
+		const { stdout, stderr } = await execAsync('uv tool upgrade pebble-tool');
+		
+		// Log output for debugging
+		if (stderr) {
+			console.log('Pebble Tool upgrade stderr:', stderr);
+		}
+		if (stdout) {
+			console.log('Pebble Tool upgrade stdout:', stdout);
+		}
+		
+		vscode.window.showInformationMessage('Pebble Tool upgraded successfully.');
+		return true;
+	} catch (error) {
+		console.error('Failed to upgrade Pebble Tool:', error);
+		vscode.window.showErrorMessage('Failed to upgrade Pebble Tool. Please run "uv tool upgrade pebble-tool" manually.');
+		return false;
+	}
+}

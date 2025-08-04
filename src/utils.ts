@@ -39,12 +39,38 @@ export async function isPebbleProject() : Promise<boolean> {
 
 const execAsync = promisify(exec);
 
-export async function isPebbleSdkInstalled(): Promise<boolean> {
+export interface PebbleVersionInfo {
+	toolVersion: string | null;
+	sdkVersion: string | null;
+}
+
+export async function getPebbleVersionInfo(): Promise<PebbleVersionInfo> {
 	try {
-		const { stdout } = await execAsync('pebble sdk list');
-		return stdout.includes('Installed SDKs:') && !stdout.includes('No SDKs installed yet.');
+		const { stdout } = await execAsync('pebble --version');
+		// Parse output like "Pebble Tool v5.0.5 (active SDK: v4.9.9)" or just "Pebble Tool v5.0.5"
+		const toolVersionMatch = stdout.match(/Pebble Tool v([\d.]+)/);
+		const sdkVersionMatch = stdout.match(/active SDK: v([\d.]+)/);
+		
+		const versionInfo = {
+			toolVersion: toolVersionMatch ? toolVersionMatch[1] : null,
+			sdkVersion: sdkVersionMatch ? sdkVersionMatch[1] : null
+		};
+		
+		console.log(`Pebble Tool version: ${versionInfo.toolVersion || 'not found'}, SDK version: ${versionInfo.sdkVersion || 'not installed'}`);
+		
+		return versionInfo;
 	} catch (error) {
-		// If pebble command doesn't exist or fails, SDK is not installed
-		return false;
+		// If pebble command doesn't exist or fails
+		console.log('Pebble Tool not found');
+		return {
+			toolVersion: null,
+			sdkVersion: null
+		};
 	}
+}
+
+export async function isPebbleSdkInstalled(): Promise<boolean> {
+	const versionInfo = await getPebbleVersionInfo();
+	// SDK is installed if we have an SDK version
+	return versionInfo.sdkVersion !== null;
 }

@@ -116,6 +116,17 @@ export async function activate(context: vscode.ExtensionContext) {
 				webviewPanel = undefined;
 			});
 
+			// Lock the panel whenever it becomes visible and active (after being dragged, etc.)
+			webviewPanel.onDidChangeViewState(e => {
+				if (e.webviewPanel.visible && e.webviewPanel.active) {
+					// Small delay to ensure the panel is fully rendered
+					setTimeout(() => {
+						vscode.commands.executeCommand('workbench.action.lockEditorGroup');
+					}, 50);
+				}
+			});
+
+			// Initial lock on creation (needed when opened via command palette)
 			setTimeout(() => {
 				vscode.commands.executeCommand('workbench.action.lockEditorGroup');
 			}, 50);

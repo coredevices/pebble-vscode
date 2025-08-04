@@ -38,6 +38,10 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
 			this._view.show?.(true);
 		}
 	}
+	
+	public isVisible(): boolean {
+		return this._view?.visible === true;
+	}
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Get the local path to the webview HTML
@@ -58,13 +62,54 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewViewProvider(PebblePreviewProvider.viewType, sidebarProvider)
 	);
 
+	// Helper function to show editor preview
+	function showEditorPreview() {
+		if (!webviewPanel || webviewPanel.visible === false) {
+			webviewPanel = vscode.window.createWebviewPanel(
+				'pebblePreview',
+				'Pebble Preview',
+				vscode.ViewColumn.Two,
+				{
+					enableScripts: true,
+					retainContextWhenHidden: true
+				}
+			);
+
+			const htmlPath = path.join(context.extensionPath, 'src', 'webview.html');
+			const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+			webviewPanel.webview.html = htmlContent;
+
+			webviewPanel.onDidDispose(() => {
+				webviewPanel = undefined;
+			});
+
+			// Lock the panel whenever it becomes visible and active
+			webviewPanel.onDidChangeViewState(e => {
+				if (e.webviewPanel.visible && e.webviewPanel.active) {
+					setTimeout(() => {
+						vscode.commands.executeCommand('workbench.action.lockEditorGroup');
+					}, 50);
+				}
+			});
+
+			// Initial lock on creation
+			setTimeout(() => {
+				vscode.commands.executeCommand('workbench.action.lockEditorGroup');
+			}, 50);
+		} else {
+			webviewPanel.reveal(vscode.ViewColumn.Two, true);
+		}
+	}
+
 	// Helper function to create or show the preview panel
 	function createOrShowPreview() {
-		// Show compact sidebar preview by default (saves space)
-		sidebarProvider.show();
+		// If sidebar view is already visible, don't open editor panel
+		if (sidebarProvider.isVisible()) {
+			return;
+		}
 		
-		// Note: Users can manually open the full editor preview using 
-		// "Pebble: Show Editor Preview" command if they want the larger view
+		// Otherwise, show editor panel by default
+		showEditorPreview();
 	}
 
 	if (await isPebbleProject()) {
@@ -96,43 +141,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		sidebarProvider.show();
 	});
 
-	const showEditorPreview = vscode.commands.registerCommand('pebble.showEditorPreview', () => {
-		if (!webviewPanel || webviewPanel.visible === false) {
-			webviewPanel = vscode.window.createWebviewPanel(
-				'pebblePreview',
-				'Pebble Preview',
-				vscode.ViewColumn.Two,
-				{
-					enableScripts: true,
-					retainContextWhenHidden: true
-				}
-			);
-
-			const htmlPath = path.join(context.extensionPath, 'src', 'webview.html');
-			const htmlContent = fs.readFileSync(htmlPath, 'utf8');
-			webviewPanel.webview.html = htmlContent;
-
-			webviewPanel.onDidDispose(() => {
-				webviewPanel = undefined;
-			});
-
-			// Lock the panel whenever it becomes visible and active (after being dragged, etc.)
-			webviewPanel.onDidChangeViewState(e => {
-				if (e.webviewPanel.visible && e.webviewPanel.active) {
-					// Small delay to ensure the panel is fully rendered
-					setTimeout(() => {
-						vscode.commands.executeCommand('workbench.action.lockEditorGroup');
-					}, 50);
-				}
-			});
-
-			// Initial lock on creation (needed when opened via command palette)
-			setTimeout(() => {
-				vscode.commands.executeCommand('workbench.action.lockEditorGroup');
-			}, 50);
-		} else {
-			webviewPanel.reveal(vscode.ViewColumn.Two, true);
-		}
+	const showEditorPreviewCommand = vscode.commands.registerCommand('pebble.showEditorPreview', () => {
+		showEditorPreview();
 	});
 
 	const runOnPhone = vscode.commands.registerCommand('pebble.runPhone', async () => {
@@ -166,7 +176,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		treeDataProvider: treeDataProvider
 	});
 
-	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, treeView, showSidebarPreview, showEditorPreview);
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, treeView, showSidebarPreview, showEditorPreviewCommand);
 }
 
 export function deactivate() {}

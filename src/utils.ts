@@ -26,12 +26,26 @@ export async function isPebbleProject() : Promise<boolean> {
 		return false;
 	}
 
-	const packageJsonUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'package.json');
-
+	const workspaceRoot = vscode.workspace.workspaceFolders[0].uri;
+	
+	// Check for package.json with 'pebble' key
+	const packageJsonUri = vscode.Uri.joinPath(workspaceRoot, 'package.json');
 	try {
 		const fileContent = await vscode.workspace.fs.readFile(packageJsonUri);
 		const packageJson = JSON.parse(fileContent.toString());
-		return 'pebble' in packageJson;
+		if ('pebble' in packageJson) {
+			return true;
+		}
+	} catch {
+		// package.json doesn't exist or can't be parsed, continue to check appinfo.json
+	}
+
+	// Check for appinfo.json with 'watchapp' key
+	const appinfoJsonUri = vscode.Uri.joinPath(workspaceRoot, 'appinfo.json');
+	try {
+		const fileContent = await vscode.workspace.fs.readFile(appinfoJsonUri);
+		const appinfoJson = JSON.parse(fileContent.toString());
+		return 'watchapp' in appinfoJson;
 	} catch {
 		return false;
 	}

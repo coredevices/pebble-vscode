@@ -13,17 +13,17 @@ export async function createProject(context: vscode.ExtensionContext) {
 		{
 			label: 'C',
 			detail: 'Default',
-			id: 'c'
+			id: '--c'
 		},
 		{
 			label: 'C simple',
 			detail: 'Minimal',
-			id: 'c-simple'
+			id: '--c --simple'
 		},
 		{
 			label: 'C and phone-side JS',
 			detail: 'With PebbleKitJS',
-			id: 'c-pkjs'
+			id: '--c --javascript'
 		}
 	], {
 		"placeHolder": "Choose a project type"
@@ -78,12 +78,7 @@ export async function createProject(context: vscode.ExtensionContext) {
 		}
 	}
 
-	let command = 'pebble new-project --c';
-	if (projectType === 'c-simple') {
-		command += ' --simple';
-	} else if (projectType === 'c-pkjs') {
-		command += ' --javascript';
-	}
+	let command = `pebble new-project ${projectType}`;
 
 	const sdkInstalled = await isPebbleSdkInstalled();
 	console.log("Pebble SDK installed:", sdkInstalled);

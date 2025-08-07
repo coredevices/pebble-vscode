@@ -16,14 +16,14 @@ export async function createProject(context: vscode.ExtensionContext) {
 			id: '--c'
 		},
 		{
-			label: 'C simple',
-			detail: 'Minimal',
-			id: '--c --simple'
-		},
-		{
 			label: 'C and phone-side JS',
 			detail: 'With PebbleKitJS',
 			id: '--c --javascript'
+		},
+		{
+			label: 'C with AI',
+			detail: 'With instructions for Claude Code and Cursor',
+			id: '--c --ai'
 		}
 	], {
 		"placeHolder": "Choose a project type"

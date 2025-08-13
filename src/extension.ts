@@ -30,7 +30,7 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
 			]
 		};
 
-		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+		webviewView.webview.html = getWebviewContent();
 	}
 
 	public show() {
@@ -42,9 +42,10 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
 	public isVisible(): boolean {
 		return this._view?.visible === true;
 	}
+}
 
-	private _getHtmlForWebview(webview: vscode.Webview) {
-		return `<!DOCTYPE html>
+function getWebviewContent() {
+	return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -111,11 +112,11 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
             
             rfb.addEventListener('disconnect', (e) => {
                 status.style.display = 'block';
-                setStatus(\`Disconnected: ${e.detail.reason || 'Connection lost'}\`, 'error');
+                setStatus(\`Disconnected: \${e.detail.reason || 'Connection lost'}\`, 'error');
             });
             
             rfb.addEventListener('securityfailure', (e) => {
-                setStatus(\`Security error: ${e.detail.reason}\`, 'error');
+                setStatus(\`Security error: \${e.detail.reason}\`, 'error');
             });
             
             // Keyboard handling
@@ -137,13 +138,12 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
             };
             
         } catch (err) {
-            setStatus(\`Failed to connect: ${err.message}\`, 'error');
+            setStatus(\`Failed to connect: \${err.message}\`, 'error');
         }
     </script>
 </body>
 </html>`;
 	}
-}
 
 export async function activate(context: vscode.ExtensionContext) {
 	console.log('Pebble extension activated');
@@ -169,9 +169,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 			);
 
-			const htmlPath = path.join(context.extensionPath, 'src', 'webview.html');
-			const htmlContent = fs.readFileSync(htmlPath, 'utf8');
-			webviewPanel.webview.html = htmlContent;
+			webviewPanel.webview.html = getWebviewContent();
 
 			webviewPanel.onDidDispose(() => {
 				webviewPanel = undefined;

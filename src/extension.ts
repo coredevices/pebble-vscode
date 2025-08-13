@@ -15,7 +15,7 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
 		private readonly _extensionUri: vscode.Uri,
 	) { }
 
-	public resolveWebviewView(
+	public async resolveWebviewView(
 		webviewView: vscode.WebviewView,
 		_context: vscode.WebviewViewResolveContext,
 		_token: vscode.CancellationToken,
@@ -30,7 +30,7 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
 			]
 		};
 
-		webviewView.webview.html = getWebviewContent();
+		webviewView.webview.html = await getWebviewContent();
 	}
 
 	public show() {
@@ -44,7 +44,17 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
 	}
 }
 
-function getWebviewContent() {
+async function getWebviewContent() {
+
+	const fullUri = await vscode.env.asExternalUri(
+		vscode.Uri.parse("http://localhost:6080/")
+	)
+	
+	// Convert to WebSocket URL
+	const wsUrl = fullUri.toString()
+		.replace(/^https:/, 'wss:')
+		.replace(/^http:/, 'ws:')
+
 	return `<!DOCTYPE html>
 <html>
 <head>
@@ -102,7 +112,7 @@ function getWebviewContent() {
         }
         
         try {
-            const rfb = new RFB(screen, 'ws://localhost:6080/');
+            const rfb = new RFB(screen, '${wsUrl}');
             
             rfb.addEventListener('connect', () => {
                 setStatus('Connected! Use arrow keys or Q/W/S/X', 'success');
@@ -157,7 +167,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	// Helper function to show editor preview
-	function showEditorPreview() {
+	async function showEditorPreview() {
 		if (!webviewPanel || webviewPanel.visible === false) {
 			webviewPanel = vscode.window.createWebviewPanel(
 				'pebbleEmulator',
@@ -169,7 +179,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 			);
 
-			webviewPanel.webview.html = getWebviewContent();
+			webviewPanel.webview.html = await getWebviewContent();
 
 			webviewPanel.onDidDispose(() => {
 				webviewPanel = undefined;

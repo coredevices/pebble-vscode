@@ -45,6 +45,15 @@ class PebblePreviewProvider implements vscode.WebviewViewProvider {
 }
 
 async function getWebviewContent() {
+	// Make the QEMU VNC port public if running in a GitHub Codespace
+	if (process.env.CODESPACES === 'true' && process.env.CODESPACE_NAME) {
+		const { exec } = require('child_process');
+		exec(`gh codespace ports visibility 6080:public -c ${process.env.CODESPACE_NAME}`, (error: any) => {
+			if (error) {
+				vscode.window.showErrorMessage(`Failed to make port 6080 public: ${error}`);
+			}
+		});
+	}
 
 	const fullUri = await vscode.env.asExternalUri(
 		vscode.Uri.parse("http://localhost:6080/")
@@ -53,7 +62,9 @@ async function getWebviewContent() {
 	// Convert to WebSocket URL
 	const wsUrl = fullUri.toString()
 		.replace(/^https:/, 'wss:')
-		.replace(/^http:/, 'ws:')
+		.replace(/^http:/, 'ws:');
+
+	
 
 	return `<!DOCTYPE html>
 <html>

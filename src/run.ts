@@ -64,7 +64,7 @@ export async function runOnEmulatorWithArgs(args = '') {
         }
     }
     
-    const needsSdkInstall = !versionInfo.sdkVersion || isVersionBelow(versionInfo.sdkVersion, 4, 9, 0);
+    const needsSdkInstall = !versionInfo.sdkVersion || isVersionBelow(versionInfo.sdkVersion, 4, 5, 0);
     
     const platform = await getEmulatorPlatform();
     if (!platform) {

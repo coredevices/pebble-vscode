@@ -74,6 +74,7 @@ async function getWebviewContent() {
     <style>
         body {
             margin: 0;
+			padding: 0;
             background: var(--vscode-editor-background);
             color: var(--vscode-editor-foreground);
             font-family: var(--vscode-font-family);

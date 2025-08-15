@@ -117,50 +117,74 @@ async function getWebviewContent() {
         const status = document.getElementById('status');
         const screen = document.getElementById('screen');
         
+        let rfb = null;
+        let retryCount = 0;
+        const maxRetries = 30; // 30 retries * 2 seconds = 1 minute max
+        
         function setStatus(msg, type = 'info') {
             status.className = type;
             status.textContent = msg;
         }
         
-        try {
-            const rfb = new RFB(screen, '${wsUrl}');
-            
-            rfb.addEventListener('connect', () => {
-                setStatus('Connected! Use arrow keys or Q/W/S/X', 'success');
-                rfb.focus();
-                setTimeout(() => status.style.display = 'none', 3000);
-            });
-            
-            rfb.addEventListener('disconnect', (e) => {
-                status.style.display = 'block';
-                setStatus(\`Disconnected: \${e.detail.reason || 'Connection lost'}\`, 'error');
-            });
-            
-            rfb.addEventListener('securityfailure', (e) => {
-                setStatus(\`Security error: \${e.detail.reason}\`, 'error');
-            });
-            
-            // Keyboard handling
-            document.onkeydown = (e) => {
-                const keyMap = {
-                    'ArrowLeft': 0xFF51,
-                    'ArrowUp': 0xFF52,
-                    'ArrowRight': 0xFF53,
-                    'ArrowDown': 0xFF54,
-                    'q': 113, 'w': 119, 's': 115, 'x': 120
+        function connect() {
+            try {
+                rfb = new RFB(screen, '${wsUrl}');
+                
+                rfb.addEventListener('connect', () => {
+                    setStatus('Connected! Use arrow keys or Q/W/S/X', 'success');
+                    rfb.focus();
+                    retryCount = 0; // Reset counter on successful connection
+                    setTimeout(() => status.style.display = 'none', 3000);
+                });
+                
+                rfb.addEventListener('disconnect', (e) => {
+                    status.style.display = 'block';
+                    if (retryCount < maxRetries) {
+                        retryCount++;
+                        setStatus(\`Disconnected. Retrying... (\${retryCount}/\${maxRetries})\`, 'error');
+                        setTimeout(connect, 2000);
+                    } else {
+                        setStatus(\`Disconnected: \${e.detail.reason || 'Connection lost'}\`, 'error');
+                    }
+                });
+                
+                rfb.addEventListener('securityfailure', (e) => {
+                    if (retryCount < maxRetries) {
+                        retryCount++;
+                        setStatus(\`Connection failed. Retrying... (\${retryCount}/\${maxRetries})\`, 'error');
+                        setTimeout(connect, 2000);
+                    } else {
+                        setStatus(\`Security error: \${e.detail.reason}\`, 'error');
+                    }
+                });
+                
+                // Keyboard handling
+                document.onkeydown = (e) => {
+                    if (!rfb) return;
+                    
+                    const keyMap = {
+                        'ArrowLeft': 0xFF51,
+                        'ArrowUp': 0xFF52,
+                        'ArrowRight': 0xFF53,
+                        'ArrowDown': 0xFF54,
+                        'q': 113, 'w': 119, 's': 115, 'x': 120
+                    };
+                    
+                    const keysym = keyMap[e.key];
+                    if (keysym) {
+                        e.preventDefault();
+                        rfb.sendKey(keysym, null, true);
+                        setTimeout(() => rfb.sendKey(keysym, null, false), 100);
+                    }
                 };
                 
-                const keysym = keyMap[e.key];
-                if (keysym) {
-                    e.preventDefault();
-                    rfb.sendKey(keysym, null, true);
-                    setTimeout(() => rfb.sendKey(keysym, null, false), 100);
-                }
-            };
-            
-        } catch (err) {
-            setStatus(\`Failed to connect: \${err.message}\`, 'error');
+            } catch (err) {
+                setStatus(\`Failed to connect: \${err.message}\`, 'error');
+            }
         }
+        
+        // Start connection
+        connect();
     </script>
 </body>
 </html>`;

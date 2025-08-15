@@ -28,11 +28,11 @@ export async function getEmulatorPlatform() {
 
 export async function requestEmulatorPlatform() {
 	const platformMap: { [key: string] : string } = {
-		'Pebble Classic': 'aplite',
-		'Pebble Time': 'basalt',
-		'Pebble Time Round': 'chalk',
-		'Pebble 2': 'diorite',
-		'Pebble Time 2': 'emery',
+		'Pebble Classic (aplite)': 'aplite',
+		'Pebble Time (basalt)': 'basalt',
+		'Pebble Time Round (chalk)': 'chalk',
+		'Pebble 2 (diorite)': 'diorite',
+		'Pebble Time 2 (emery)': 'emery',
 	};
 
 	const platformName = await vscode.window.showQuickPick(Object.keys(platformMap), {

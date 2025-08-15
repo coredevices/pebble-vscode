@@ -119,7 +119,7 @@ async function getWebviewContent() {
         
         let rfb = null;
         let retryCount = 0;
-        const maxRetries = 30; // 30 retries * 2 seconds = 1 minute max
+        const maxRetries = 20; // 20 retries * 1 second = 20 seconds max
         
         function setStatus(msg, type = 'info') {
             status.className = type;
@@ -142,7 +142,7 @@ async function getWebviewContent() {
                     if (retryCount < maxRetries) {
                         retryCount++;
                         setStatus('Waiting for emulator...', 'info');
-                        setTimeout(connect, 2000);
+                        setTimeout(connect, 1000);
                     } else {
                         setStatus(\`Disconnected: \${e.detail.reason || 'Connection lost'}\`, 'error');
                     }

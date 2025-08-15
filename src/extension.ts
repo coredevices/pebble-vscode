@@ -141,7 +141,7 @@ async function getWebviewContent() {
                     status.style.display = 'block';
                     if (retryCount < maxRetries) {
                         retryCount++;
-                        setStatus(\`Disconnected. Retrying... (\${retryCount}/\${maxRetries})\`, 'error');
+                        setStatus('Waiting for emulator...', 'info');
                         setTimeout(connect, 2000);
                     } else {
                         setStatus(\`Disconnected: \${e.detail.reason || 'Connection lost'}\`, 'error');
@@ -149,13 +149,7 @@ async function getWebviewContent() {
                 });
                 
                 rfb.addEventListener('securityfailure', (e) => {
-                    if (retryCount < maxRetries) {
-                        retryCount++;
-                        setStatus(\`Connection failed. Retrying... (\${retryCount}/\${maxRetries})\`, 'error');
-                        setTimeout(connect, 2000);
-                    } else {
-                        setStatus(\`Security error: \${e.detail.reason}\`, 'error');
-                    }
+                    setStatus(\`Security error: \${e.detail.reason}\`, 'error');
                 });
                 
                 // Keyboard handling

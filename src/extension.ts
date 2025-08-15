@@ -74,9 +74,9 @@ async function getWebviewContent() {
     <style>
         body {
             margin: 0;
-            background: #222;
-            color: #fff;
-            font-family: monospace;
+            background: var(--vscode-editor-background);
+            color: var(--vscode-editor-foreground);
+            font-family: var(--vscode-font-family);
         }
         
         #screen {
@@ -85,7 +85,11 @@ async function getWebviewContent() {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000;
+            background: var(--vscode-editor-background);
+        }
+        
+        #screen > div {
+            background: var(--vscode-editor-background) !important;
         }
         
         #screen canvas {
@@ -96,15 +100,19 @@ async function getWebviewContent() {
             position: fixed;
             top: 10px;
             left: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            border-radius: 5px;
+            background: var(--vscode-editor-background);
+            color: var(--vscode-editor-foreground);
+            border: 1px solid var(--vscode-panel-border);
+            padding: 10px 15px;
+            border-radius: 4px;
             max-width: 400px;
+            font-size: var(--vscode-editor-font-size);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
-        .error { color: #ff6b6b; }
-        .success { color: #51cf66; }
-        .info { color: #74c0fc; }
+        .error { color: var(--vscode-editorError-foreground); }
+        .success { color: var(--vscode-terminal-ansiGreen); }
+        .info { color: var(--vscode-editorInfo-foreground); }
     </style>
 </head>
 <body>

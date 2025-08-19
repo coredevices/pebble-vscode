@@ -142,6 +142,24 @@
         "category": "Pebble"
       }
     ],
+    "walkthroughs": [
+      {
+        "id": "pebble.getStarted",
+        "title": "Get Started with Pebble",
+        "description": "Learn how to use the Pebble extension for VS Code",
+        "steps": [
+          {
+            "id": "openPebbleView",
+            "title": "Open Pebble Extension",
+            "description": "Click the Pebble icon in the left sidebar.\n\n[Open Pebble Extension](command:workbench.view.extension.pebble-container)",
+            "media": {
+              "image": "resources/p2.png",
+              "altText": "Pebble extension icon"
+            }
+          }
+        ]
+      }
+    ],
     "menus": {
       "editor/title/run": [
         {

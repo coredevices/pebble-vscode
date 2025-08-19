@@ -156,6 +156,15 @@
               "image": "resources/p2.png",
               "altText": "Pebble extension icon"
             }
+          },
+          {
+            "id": "createProject",
+            "title": "Create New Project",
+            "description": "Start building your first Pebble app by creating a new project.\n\n[Create New Project](command:pebble.newProject)",
+            "media": {
+              "image": "resources/p2.png",
+              "altText": "Create new Pebble project"
+            }
           }
         ]
       }

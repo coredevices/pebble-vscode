@@ -51,13 +51,7 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)",
-        "when": "pebbleProject"
-      },
-      {
-        "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)",
-        "when": "!pebbleProject"
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)"
       }
     ],
     "viewsContainers": {

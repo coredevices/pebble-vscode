@@ -114,6 +114,38 @@ async function getWebviewContent() {
         .error { color: var(--vscode-editorError-foreground); }
         .success { color: var(--vscode-terminal-ansiGreen); }
         .info { color: var(--vscode-editorInfo-foreground); }
+        
+        .control-button {
+            position: absolute;
+            background: #6b6b6b;
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+        
+        .control-button:hover {
+            background: #7b7b7b;
+        }
+        
+        .control-button:active {
+            background: #5b5b5b;
+            transform: scale(0.98);
+        }
+        
+        #button-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        
+        #button-container .control-button {
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
@@ -144,6 +176,77 @@ async function getWebviewContent() {
                     rfb.focus();
                     retryCount = 0; // Reset counter on successful connection
                     setTimeout(() => status.style.display = 'none', 3000);
+                    
+                    // Add control buttons after connection
+                    setTimeout(() => {
+                        const canvas = document.querySelector('#screen canvas');
+                        if (!canvas) return;
+                        
+                        const container = canvas.parentElement;
+                        if (!container || document.getElementById('button-container')) return;
+                        
+                        const buttonContainer = document.createElement('div');
+                        buttonContainer.id = 'button-container';
+                        buttonContainer.style.width = canvas.offsetWidth + 'px';
+                        buttonContainer.style.height = canvas.offsetHeight + 'px';
+                        
+                        // Calculate button dimensions dynamically
+                        const canvasHeight = canvas.offsetHeight;
+                        const buttonWidth = 25;
+                        const spacing = 8;
+                        const buttonHeight = (canvasHeight - (spacing * 2)) / 3;
+                        
+                        // Button configuration
+                        const buttonConfig = [
+                            { id: 'btn-left', key: 'ArrowLeft', side: 'left', position: 0.5 },
+                            { id: 'btn-up', key: 'ArrowUp', side: 'right', position: 0 },
+                            { id: 'btn-select', key: 'ArrowRight', side: 'right', position: 1 },
+                            { id: 'btn-down', key: 'ArrowDown', side: 'right', position: 2 }
+                        ];
+                        
+                        // Create and position buttons
+                        const buttons = buttonConfig.map(config => {
+                            const btn = document.createElement('button');
+                            btn.id = config.id;
+                            btn.className = 'control-button';
+                            btn.setAttribute('data-key', config.key);
+                            
+                            // Set dimensions
+                            btn.style.width = buttonWidth + 'px';
+                            btn.style.height = buttonHeight + 'px';
+                            
+                            // Position based on side
+                            if (config.side === 'left') {
+                                btn.style.left = '-' + buttonWidth + 'px';
+                                btn.style.top = '50%';
+                                btn.style.transform = 'translateY(-50%)';
+                            } else {
+                                btn.style.right = '-' + buttonWidth + 'px';
+                                btn.style.top = ((buttonHeight + spacing) * config.position) + 'px';
+                            }
+                            
+                            buttonContainer.appendChild(btn);
+                            return btn;
+                        });
+                        
+                        container.appendChild(buttonContainer);
+                        
+                        // Add event handlers
+                        buttons.forEach(button => {
+                            button.addEventListener('click', () => {
+                                if (!rfb) return;
+                                
+                                const key = button.getAttribute('data-key');
+                                const keysym = keyMap[key];
+                                if (keysym) {
+                                    rfb.sendKey(keysym, null, true);
+                                    setTimeout(() => rfb.sendKey(keysym, null, false), 100);
+                                }
+                            });
+                            
+                            button.addEventListener('contextmenu', e => e.preventDefault());
+                        });
+                    }, 100);
                 });
                 
                 rfb.addEventListener('disconnect', (e) => {
@@ -162,16 +265,16 @@ async function getWebviewContent() {
                 });
                 
                 // Keyboard handling
+                const keyMap = {
+                    'ArrowLeft': 0xFF51,
+                    'ArrowUp': 0xFF52,
+                    'ArrowRight': 0xFF53,
+                    'ArrowDown': 0xFF54,
+                    'q': 113, 'w': 119, 's': 115, 'x': 120
+                };
+                
                 document.onkeydown = (e) => {
                     if (!rfb) return;
-                    
-                    const keyMap = {
-                        'ArrowLeft': 0xFF51,
-                        'ArrowUp': 0xFF52,
-                        'ArrowRight': 0xFF53,
-                        'ArrowDown': 0xFF54,
-                        'q': 113, 'w': 119, 's': 115, 'x': 120
-                    };
                     
                     const keysym = keyMap[e.key];
                     if (keysym) {

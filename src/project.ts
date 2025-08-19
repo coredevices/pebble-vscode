@@ -7,6 +7,10 @@ interface ProjectTypeItem extends vscode.QuickPickItem {
 	id: string;
 }
 
+function isDevContainer(): boolean {
+	return process.env.REMOTE_CONTAINERS === 'true' || process.env.CODESPACES === 'true';
+}
+
 export async function createProject(context: vscode.ExtensionContext) {
 
 	const projectTypeObject = await vscode.window.showQuickPick<ProjectTypeItem>([
@@ -52,9 +56,13 @@ export async function createProject(context: vscode.ExtensionContext) {
 		defaultUri: vscode.Uri.file(os.homedir())
 	};
 
-	const lastPath = getLastPath(context);
-	if (lastPath) {
-		options.defaultUri = vscode.Uri.file(lastPath);
+	if (isDevContainer()) {
+		options.defaultUri = vscode.Uri.file('/workspaces');
+	} else {
+		const lastPath = getLastPath(context);
+		if (lastPath) {
+			options.defaultUri = vscode.Uri.file(lastPath);
+		}
 	}
 
 	const folderUri = await vscode.window.showOpenDialog(options);

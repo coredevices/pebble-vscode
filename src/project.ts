@@ -74,6 +74,8 @@ export async function createProject(context: vscode.ExtensionContext) {
 	const projectPath = folderUri[0].fsPath;
 	console.log(`Creating project at: ${projectPath}`);
 
+	vscode.window.showInformationMessage(`Creating project...`);
+
 	await storeLastPath(context, projectPath);
 	
 	const versionInfo = await getPebbleVersionInfo();

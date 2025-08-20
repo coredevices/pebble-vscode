@@ -150,3 +150,23 @@ export async function runOnPhoneWithArgs(args = '') {
     terminal.sendText('\x03'); // Send Ctrl+C
     terminal.sendText(`pebble build && pebble install --phone ${phoneIp}${args ? ' ' + args : ''}`, true);
 }
+
+export async function wipeEmulator() {
+    const { exec } = require('child_process');
+    
+    vscode.window.showInformationMessage('Wiping emulator data...');
+    
+    exec('pebble wipe', (error: any, stdout: string, stderr: string) => {
+        if (error) {
+            vscode.window.showErrorMessage(`Failed to wipe emulator: ${error.message}`);
+            return;
+        }
+        
+        if (stderr && !stdout) {
+            vscode.window.showErrorMessage(`Failed to wipe emulator: ${stderr}`);
+            return;
+        }
+        
+        vscode.window.showInformationMessage('Emulator data wiped successfully.');
+    });
+}

@@ -51,7 +51,7 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\n\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\n\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)"
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\n\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\n\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\n\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
       }
     ],
     "viewsContainers": {
@@ -133,6 +133,11 @@
       {
         "command": "pebble.showEditorPreview",
         "title": "Show Editor Preview",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.wipeEmulator",
+        "title": "Wipe Emulator",
         "category": "Pebble"
       }
     ],

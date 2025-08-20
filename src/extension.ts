@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
-import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs } from './run';
+import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs, wipeEmulator } from './run';
 import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
@@ -414,12 +414,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		await config.update('phoneIp', phoneIp, vscode.ConfigurationTarget.Global);
 	});
 
+	const wipeEmulatorCommand = vscode.commands.registerCommand('pebble.wipeEmulator', async () => {
+		wipeEmulator();
+	});
+
 	const treeDataProvider = new PebbleTreeProvider();
 	const treeView = vscode.window.createTreeView('backgroundTreeView', {
 		treeDataProvider: treeDataProvider
 	});
 
-	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, treeView, showSidebarPreview, showEditorPreviewCommand);
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, treeView, showSidebarPreview, showEditorPreviewCommand);
 }
 
 export function deactivate() {}

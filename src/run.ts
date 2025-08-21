@@ -150,7 +150,7 @@ export async function wipeEmulator() {
     
     vscode.window.showInformationMessage('Wiping emulator data...');
     
-    exec('pebble wipe', (error: any, stdout: string, stderr: string) => {
+    exec('pebble kill && pebble wipe', (error: any, stdout: string, stderr: string) => {
         if (error) {
             vscode.window.showErrorMessage(`Failed to wipe emulator: ${error.message}`);
             return;

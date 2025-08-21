@@ -12,6 +12,10 @@ export function getWorkspacePath(): string | undefined {
     return workspacePath;
 }
 
+export function isDevContainer(): boolean {
+    return process.env.REMOTE_CONTAINERS === 'true' || process.env.CODESPACES === 'true';
+}
+
 export async function storeLastPath(context: vscode.ExtensionContext, folderPath: string) {
     console.log(`Storing last path: ${folderPath}`);
     await context.globalState.update('lastPath', folderPath);

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWorkspacePath, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool } from './utils';
+import { getWorkspacePath, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool, isDevContainer } from './utils';
 
 export async function getEmulatorPlatform() {
 	const defaultPlatform = vscode.workspace.getConfiguration('pebble').get<string>('defaultPlatform');
@@ -81,12 +81,15 @@ export async function runOnEmulatorWithArgs(args = '') {
     terminal.show();
     terminal.sendText('\x03'); // Send Ctrl+C
     
+    // Add timeout wrapper if in devcontainer and using logs
+    const timeoutPrefix = (isDevContainer() && args.includes('--logs')) ? 'timeout 30m ' : '';
+    
     // Install latest SDK if needed, then build and run
     if (needsSdkInstall) {
         vscode.window.showInformationMessage('Installing the latest Pebble SDK.');
-        terminal.sendText(`pebble sdk install latest && pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
+        terminal.sendText(`pebble sdk install latest && pebble build && ${timeoutPrefix}pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
     } else {
-        terminal.sendText(`pebble build && pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
+        terminal.sendText(`pebble build && ${timeoutPrefix}pebble install --emulator ${platform}${args ? ' ' + args : ''} --vnc`, true);
     }
 }
 
@@ -142,7 +145,11 @@ export async function runOnPhoneWithArgs(args = '') {
 
     terminal.show();
     terminal.sendText('\x03'); // Send Ctrl+C
-    terminal.sendText(`pebble build && pebble install --phone ${phoneIp}${args ? ' ' + args : ''}`, true);
+    
+    // Add timeout wrapper if in devcontainer and using logs
+    const timeoutPrefix = (isDevContainer() && args.includes('--logs')) ? 'timeout 30m ' : '';
+    
+    terminal.sendText(`pebble build && ${timeoutPrefix}pebble install --phone ${phoneIp}${args ? ' ' + args : ''}`, true);
 }
 
 export async function wipeEmulator() {

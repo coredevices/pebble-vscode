@@ -1,14 +1,10 @@
 import * as vscode from 'vscode';
 import * as os from 'os';
-import { storeLastPath, getLastPath, isPebbleSdkInstalled, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool } from './utils';
+import { storeLastPath, getLastPath, isPebbleSdkInstalled, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool, isDevContainer } from './utils';
 import * as cp from 'child_process';
 
 interface ProjectTypeItem extends vscode.QuickPickItem {
 	id: string;
-}
-
-function isDevContainer(): boolean {
-	return process.env.REMOTE_CONTAINERS === 'true' || process.env.CODESPACES === 'true';
 }
 
 export async function createProject(context: vscode.ExtensionContext) {

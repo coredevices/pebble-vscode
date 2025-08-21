@@ -50,10 +50,13 @@ export async function createProject(context: vscode.ExtensionContext) {
 	let projectPath: string;
 
 	if (isDevContainer()) {
-		// In dev containers, automatically use /workspaces without prompting
-		projectPath = '/workspaces';
+		const baseFolder = process.env.LOCALWORKSPACEFOLDERBASENAME;
+		if (!baseFolder) {
+			vscode.window.showErrorMessage('LOCALWORKSPACEFOLDERBASENAME environment variable is not set');
+			return;
+		}
+		projectPath = `/workspaces/${baseFolder}`;
 	} else {
-		// For non-dev containers, show the folder selection dialog
 		const options: vscode.OpenDialogOptions = {
 			canSelectFiles: false,
 			canSelectFolders: true,
@@ -139,21 +142,25 @@ export async function createProject(context: vscode.ExtensionContext) {
 
 export async function openProject() {
 	if (isDevContainer()) {
-		// In dev containers, show a list of folders in /workspaces
 		const fs = require('fs');
 		const path = require('path');
 		
+		const baseFolder = process.env.LOCALWORKSPACEFOLDERBASENAME;
+		if (!baseFolder) {
+			vscode.window.showErrorMessage('LOCALWORKSPACEFOLDERBASENAME environment variable is not set');
+			return;
+		}
+		
 		try {
-			const workspacesPath = '/workspaces';
-			const entries = fs.readdirSync(workspacesPath, { withFileTypes: true });
+			const projectsPath = `/workspaces/${baseFolder}`;
+			const entries = fs.readdirSync(projectsPath, { withFileTypes: true });
 			
-			// Filter to only directories
 			const folderNames = entries
 				.filter((entry: any) => entry.isDirectory())
 				.map((entry: any) => entry.name);
 			
 			if (folderNames.length === 0) {
-				vscode.window.showInformationMessage('No projects found in /workspaces');
+				vscode.window.showInformationMessage(`No projects found in ${projectsPath}`);
 				return;
 			}
 			
@@ -163,13 +170,12 @@ export async function openProject() {
 			});
 			
 			if (selected) {
-				vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(path.join(workspacesPath, selected)));
+				vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(path.join(projectsPath, selected)));
 			}
 		} catch (error) {
-			vscode.window.showErrorMessage(`Error reading /workspaces: ${error}`);
+			vscode.window.showErrorMessage(`Error reading projects: ${error}`);
 		}
 	} else {
-		// For non-dev containers, use the regular file picker
 		vscode.commands.executeCommand('workbench.action.files.openFolder');
 	}
 }

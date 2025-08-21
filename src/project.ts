@@ -47,31 +47,35 @@ export async function createProject(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	const options: vscode.OpenDialogOptions = {
-		canSelectFiles: false,
-		canSelectFolders: true,
-		canSelectMany: false,
-		openLabel: 'Create here',
-		title: 'Create a new Pebble project',
-		defaultUri: vscode.Uri.file(os.homedir())
-	};
+	let projectPath: string;
 
 	if (isDevContainer()) {
-		options.defaultUri = vscode.Uri.file('/workspaces');
+		// In dev containers, automatically use /workspaces without prompting
+		projectPath = '/workspaces';
 	} else {
+		// For non-dev containers, show the folder selection dialog
+		const options: vscode.OpenDialogOptions = {
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: 'Create here',
+			title: 'Create a new Pebble project',
+			defaultUri: vscode.Uri.file(os.homedir())
+		};
+
 		const lastPath = getLastPath(context);
 		if (lastPath) {
 			options.defaultUri = vscode.Uri.file(lastPath);
 		}
+
+		const folderUri = await vscode.window.showOpenDialog(options);
+
+		if (!folderUri || folderUri.length === 0) {
+			return;
+		}
+
+		projectPath = folderUri[0].fsPath;
 	}
-
-	const folderUri = await vscode.window.showOpenDialog(options);
-
-	if (!folderUri || folderUri.length === 0) {
-		return;
-	}
-
-	const projectPath = folderUri[0].fsPath;
 	console.log(`Creating project at: ${projectPath}`);
 
 	vscode.window.showInformationMessage(`Creating project...`);
@@ -134,5 +138,38 @@ export async function createProject(context: vscode.ExtensionContext) {
 }
 
 export async function openProject() {
-	vscode.commands.executeCommand('workbench.action.files.openFolder');
+	if (isDevContainer()) {
+		// In dev containers, show a list of folders in /workspaces
+		const fs = require('fs');
+		const path = require('path');
+		
+		try {
+			const workspacesPath = '/workspaces';
+			const entries = fs.readdirSync(workspacesPath, { withFileTypes: true });
+			
+			// Filter to only directories
+			const folderNames = entries
+				.filter((entry: any) => entry.isDirectory())
+				.map((entry: any) => entry.name);
+			
+			if (folderNames.length === 0) {
+				vscode.window.showInformationMessage('No projects found in /workspaces');
+				return;
+			}
+			
+			const selected = await vscode.window.showQuickPick(folderNames, {
+				placeHolder: 'Select a project to open',
+				title: 'Open Pebble Project'
+			});
+			
+			if (selected) {
+				vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(path.join(workspacesPath, selected)));
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage(`Error reading /workspaces: ${error}`);
+		}
+	} else {
+		// For non-dev containers, use the regular file picker
+		vscode.commands.executeCommand('workbench.action.files.openFolder');
+	}
 }

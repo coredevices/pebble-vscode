@@ -156,7 +156,7 @@ export async function openProject() {
 			const entries = fs.readdirSync(projectsPath, { withFileTypes: true });
 			
 			const folderNames = entries
-				.filter((entry: any) => entry.isDirectory())
+				.filter((entry: any) => entry.isDirectory() && !entry.name.startsWith('.'))
 				.map((entry: any) => entry.name);
 			
 			if (folderNames.length === 0) {

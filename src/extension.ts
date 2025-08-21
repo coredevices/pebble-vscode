@@ -419,7 +419,66 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	const downloadPbwCommand = vscode.commands.registerCommand('pebble.downloadPbw', async () => {
-		vscode.window.showInformationMessage('Download PBW was pressed');
+		const workspaceFolders = vscode.workspace.workspaceFolders;
+		if (!workspaceFolders || workspaceFolders.length === 0) {
+			vscode.window.showErrorMessage('No workspace folder is open');
+			return;
+		}
+
+		const workspacePath = workspaceFolders[0].uri.fsPath;
+		
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: "Building PBW...",
+			cancellable: false
+		}, async () => {
+			const { exec } = require('child_process');
+			const { promisify } = require('util');
+			const execAsync = promisify(exec);
+			
+			try {
+				// Build the project
+				await execAsync('pebble build', { cwd: workspacePath });
+				
+				// Find the .pbw file in build directory
+				const buildPath = path.join(workspacePath, 'build');
+				const files = await vscode.workspace.fs.readDirectory(vscode.Uri.file(buildPath));
+				const pbwFile = files.find(([name]) => name.endsWith('.pbw'));
+				
+				if (!pbwFile) {
+					vscode.window.showErrorMessage('No PBW file found in build directory');
+					return;
+				}
+				
+				const pbwPath = path.join(buildPath, pbwFile[0]);
+				
+				// Codespace: trigger browser download. Desktop: ask where to save.
+				if (process.env.CODESPACES === 'true') {
+					const pbwContent = await vscode.workspace.fs.readFile(vscode.Uri.file(pbwPath));
+					const base64 = Buffer.from(pbwContent).toString('base64');
+					await vscode.env.openExternal(vscode.Uri.parse(`data:application/octet-stream;base64,${base64}`));
+				} else {
+					const saveUri = await vscode.window.showSaveDialog({
+						defaultUri: vscode.Uri.file(path.join(require('os').homedir(), pbwFile[0])),
+						filters: { 'Pebble App': ['pbw'] }
+					});
+					if (!saveUri) {
+						return;
+					}
+					
+					// Copy the file to the chosen location
+					await vscode.workspace.fs.copy(
+						vscode.Uri.file(pbwPath),
+						saveUri,
+						{ overwrite: true }
+					);
+					vscode.window.showInformationMessage(`PBW file saved to ${path.basename(saveUri.fsPath)}`);
+				}
+			} catch (error: any) {
+				// Display the error message from the build
+				vscode.window.showErrorMessage(`Build failed: ${error.message}`);
+			}
+		});
 	});
 
 	const downloadZipCommand = vscode.commands.registerCommand('pebble.downloadZip', async () => {

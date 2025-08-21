@@ -127,6 +127,11 @@ export async function requestPhoneIp() {
 }
 
 export async function runOnPhoneWithArgs(args = '') {
+    if (isDevContainer()) {
+        vscode.window.showErrorMessage('Installing on phone in a codespace is not currently supported.');
+        return;
+    }
+    
     const workspacePath = getWorkspacePath();
     if (!workspacePath) {
         vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder to run the project.');

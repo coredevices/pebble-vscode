@@ -418,12 +418,68 @@ export async function activate(context: vscode.ExtensionContext) {
 		wipeEmulator();
 	});
 
+	const downloadPbwCommand = vscode.commands.registerCommand('pebble.downloadPbw', async () => {
+		vscode.window.showInformationMessage('Download PBW was pressed');
+	});
+
+	const downloadZipCommand = vscode.commands.registerCommand('pebble.downloadZip', async () => {
+		const workspaceFolders = vscode.workspace.workspaceFolders;
+		if (!workspaceFolders || workspaceFolders.length === 0) {
+			vscode.window.showErrorMessage('No workspace folder is open');
+			return;
+		}
+
+		const workspacePath = workspaceFolders[0].uri.fsPath;
+		const workspaceName = path.basename(workspacePath);
+		
+		// Codespace: use temp directory. Desktop: ask where to save.
+		let zipPath: string;
+		if (process.env.CODESPACES === 'true') {
+			zipPath = path.join(require('os').tmpdir(), `${workspaceName}.zip`);
+		} else {
+			const saveUri = await vscode.window.showSaveDialog({
+				defaultUri: vscode.Uri.file(path.join(require('os').homedir(), `${workspaceName}.zip`)),
+				filters: { 'ZIP Files': ['zip'] }
+			});
+			if (!saveUri) {
+				return;
+			}
+			zipPath = saveUri.fsPath;
+		}
+		
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: "Creating ZIP file...",
+			cancellable: false
+		}, async () => {
+			const { exec } = require('child_process');
+			const { promisify } = require('util');
+			const execAsync = promisify(exec);
+			
+			try {
+				await execAsync(`cd "${workspacePath}" && zip -r "${zipPath}" .`);
+				
+				// Codespace: trigger browser download. Desktop: show success message.
+				if (process.env.CODESPACES === 'true') {
+					const zipContent = await vscode.workspace.fs.readFile(vscode.Uri.file(zipPath));
+					const base64 = Buffer.from(zipContent).toString('base64');
+					await vscode.env.openExternal(vscode.Uri.parse(`data:application/zip;base64,${base64}`));
+					await vscode.workspace.fs.delete(vscode.Uri.file(zipPath));
+				} else {
+					vscode.window.showInformationMessage(`ZIP file saved to ${path.basename(zipPath)}`);
+				}
+			} catch (error: any) {
+				vscode.window.showErrorMessage(`Failed to create ZIP: ${error.message}`);
+			}
+		});
+	});
+
 	const treeDataProvider = new PebbleTreeProvider();
 	const treeView = vscode.window.createTreeView('backgroundTreeView', {
 		treeDataProvider: treeDataProvider
 	});
 
-	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, treeView, showSidebarPreview, showEditorPreviewCommand);
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, downloadPbwCommand, downloadZipCommand, treeView, showSidebarPreview, showEditorPreviewCommand);
 }
 
 export function deactivate() {}

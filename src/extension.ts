@@ -459,7 +459,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					await vscode.env.openExternal(vscode.Uri.parse(`data:application/octet-stream;base64,${base64}`));
 				} else {
 					const saveUri = await vscode.window.showSaveDialog({
-						defaultUri: vscode.Uri.file(path.join(require('os').homedir(), pbwFile[0])),
+						defaultUri: vscode.Uri.file(path.join(require('os').homedir(), 'Downloads', pbwFile[0])),
 						filters: { 'Pebble App': ['pbw'] }
 					});
 					if (!saveUri) {
@@ -497,7 +497,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			zipPath = path.join(require('os').tmpdir(), `${workspaceName}.zip`);
 		} else {
 			const saveUri = await vscode.window.showSaveDialog({
-				defaultUri: vscode.Uri.file(path.join(require('os').homedir(), `${workspaceName}.zip`)),
+				defaultUri: vscode.Uri.file(path.join(require('os').homedir(), 'Downloads', `${workspaceName}.zip`)),
 				filters: { 'ZIP Files': ['zip'] }
 			});
 			if (!saveUri) {

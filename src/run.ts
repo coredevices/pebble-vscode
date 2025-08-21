@@ -13,15 +13,9 @@ export async function getEmulatorPlatform() {
 		return;
 	}
 
-	const setDefault = await vscode.window.showQuickPick(['No', 'Yes'], {
-		placeHolder: 'Set this platform as the default for future runs?',
-		canPickMany: false,
-	});
-
-	if (setDefault === 'Yes') {
-		const config = vscode.workspace.getConfiguration('pebble');
-		await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
-	}
+	// Automatically set as default
+	const config = vscode.workspace.getConfiguration('pebble');
+	await config.update('defaultPlatform', platform, vscode.ConfigurationTarget.Global);
 
 	return platform;
 }

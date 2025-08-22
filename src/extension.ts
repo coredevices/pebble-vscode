@@ -452,11 +452,29 @@ export async function activate(context: vscode.ExtensionContext) {
 				
 				const pbwPath = path.join(buildPath, pbwFile[0]);
 				
-				// Codespace: trigger browser download. Desktop: ask where to save.
+				// Codespace: save to workspace. Desktop: ask where to save.
 				if (process.env.CODESPACES === 'true') {
-					const pbwContent = await vscode.workspace.fs.readFile(vscode.Uri.file(pbwPath));
-					const base64 = Buffer.from(pbwContent).toString('base64');
-					await vscode.env.openExternal(vscode.Uri.parse(`data:application/octet-stream;base64,${base64}`));
+					// Create downloads folder in workspace if it doesn't exist
+					const downloadsPath = path.join(workspacePath, 'downloads');
+					try {
+						await vscode.workspace.fs.createDirectory(vscode.Uri.file(downloadsPath));
+					} catch {
+						// Directory might already exist
+					}
+					
+					// Copy the pbw file to downloads folder
+					const destPath = path.join(downloadsPath, pbwFile[0]);
+					await vscode.workspace.fs.copy(
+						vscode.Uri.file(pbwPath),
+						vscode.Uri.file(destPath),
+						{ overwrite: true }
+					);
+					
+					// Show message and reveal file in explorer
+					vscode.window.showInformationMessage('Right-click the file to download it.');
+					
+					// Reveal the file in explorer
+					await vscode.commands.executeCommand('revealInExplorer', vscode.Uri.file(destPath));
 				} else {
 					const saveUri = await vscode.window.showSaveDialog({
 						defaultUri: vscode.Uri.file(path.join(require('os').homedir(), 'Downloads', pbwFile[0])),
@@ -518,12 +536,30 @@ export async function activate(context: vscode.ExtensionContext) {
 			try {
 				await execAsync(`cd "${workspacePath}" && zip -r "${zipPath}" .`);
 				
-				// Codespace: trigger browser download. Desktop: show success message.
+				// Codespace: save to workspace. Desktop: show success message.
 				if (process.env.CODESPACES === 'true') {
-					const zipContent = await vscode.workspace.fs.readFile(vscode.Uri.file(zipPath));
-					const base64 = Buffer.from(zipContent).toString('base64');
-					await vscode.env.openExternal(vscode.Uri.parse(`data:application/zip;base64,${base64}`));
+					// Create downloads folder in workspace if it doesn't exist
+					const downloadsPath = path.join(workspacePath, 'downloads');
+					try {
+						await vscode.workspace.fs.createDirectory(vscode.Uri.file(downloadsPath));
+					} catch {
+						// Directory might already exist
+					}
+					
+					// Move the zip file to downloads folder
+					const destPath = path.join(downloadsPath, `${workspaceName}.zip`);
+					await vscode.workspace.fs.copy(
+						vscode.Uri.file(zipPath),
+						vscode.Uri.file(destPath),
+						{ overwrite: true }
+					);
 					await vscode.workspace.fs.delete(vscode.Uri.file(zipPath));
+					
+					// Show message and reveal file in explorer
+					vscode.window.showInformationMessage('Right-click the file to download it.');
+					
+					// Reveal the file in explorer
+					await vscode.commands.executeCommand('revealInExplorer', vscode.Uri.file(destPath));
 				} else {
 					vscode.window.showInformationMessage(`ZIP file saved to ${path.basename(zipPath)}`);
 				}

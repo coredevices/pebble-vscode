@@ -392,7 +392,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		runOnPhoneWithArgs();
 	});
 
-	const runOnPhoneWithLogs = vscode.commands.registerCommand('pebble.runOnPhoneWithLogs', async () => {
+	const runOnPhoneWithLogs = vscode.commands.registerCommand('pebble.runPhoneLogs', async () => {
 		runOnPhoneWithArgs('--logs');
 	});
 

@@ -160,7 +160,7 @@ async function getWebviewContent() {
         
         let rfb = null;
         let retryCount = 0;
-        const maxRetries = 30; // 30 retries * 1 second = 30 seconds max
+        const maxRetries = 60; // 60 seconds of retries
         
         function setStatus(msg, type = 'info') {
             status.className = type;

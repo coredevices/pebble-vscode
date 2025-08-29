@@ -51,7 +51,7 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\n\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\n\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\n\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\n\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
       }
     ],
     "viewsContainers": {
@@ -160,7 +160,7 @@
           {
             "id": "openPebbleView",
             "title": "Open Pebble Extension",
-            "description": "Click the Pebble icon in the left sidebar.\n\n[Open Pebble Extension](command:workbench.view.extension.pebble-container)",
+            "description": "Click the Pebble icon in the left sidebar.\n[Open Pebble Extension](command:workbench.view.extension.pebble-container)",
             "media": {
               "image": "resources/p2.png",
               "altText": "Pebble extension icon"
@@ -169,7 +169,7 @@
           {
             "id": "createProject",
             "title": "Create New Project",
-            "description": "Create a new Pebble app.\n\n[Create New Project](command:pebble.newProject)",
+            "description": "Create a new Pebble app.\n[Create New Project](command:pebble.newProject)",
             "media": {
               "image": "resources/p2.png",
               "altText": "Create new Pebble project"

@@ -172,7 +172,7 @@ async function getWebviewContent() {
                 rfb = new RFB(screen, '${wsUrl}');
                 
                 rfb.addEventListener('connect', () => {
-                    setStatus('Connected! Use arrow keys or Q/W/S/X', 'success');
+                    setStatus('Connected! Use arrow keys to navigate', 'success');
                     rfb.focus();
                     retryCount = 0; // Reset counter on successful connection
                     setTimeout(() => status.style.display = 'none', 3000);

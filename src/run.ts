@@ -127,19 +127,9 @@ export async function requestPhoneIp() {
 }
 
 export async function runOnPhoneWithArgs(args = '') {
-    if (isDevContainer()) {
-        vscode.window.showErrorMessage('Installing on phone in a codespace is not currently supported.');
-        return;
-    }
-    
     const workspacePath = getWorkspacePath();
     if (!workspacePath) {
         vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder to run the project.');
-        return;
-    }
-
-    const phoneIp = await getPhoneIp();
-    if (!phoneIp) {
         return;
     }
 
@@ -151,10 +141,18 @@ export async function runOnPhoneWithArgs(args = '') {
     terminal.show();
     terminal.sendText('\x03'); // Send Ctrl+C
     
-    // Add timeout wrapper if in devcontainer and using logs
-    const timeoutPrefix = (isDevContainer() && args.includes('--logs')) ? 'timeout 30m ' : '';
-    
-    terminal.sendText(`pebble build && ${timeoutPrefix}pebble install --phone ${phoneIp}${args ? ' ' + args : ''}`, true);
+    if (isDevContainer()) {
+        // For devcontainer: authenticate with GitHub token and use cloudpebble
+        const timeoutPrefix = args.includes('--logs') ? 'timeout 30m ' : '';
+        terminal.sendText(`pebble login --token $GITHUB_TOKEN && pebble build && ${timeoutPrefix}pebble install --cloudpebble${args ? ' ' + args : ''}`, true);
+    } else {
+        // For local: get phone IP and install to phone
+        const phoneIp = await getPhoneIp();
+        if (!phoneIp) {
+            return;
+        }
+        terminal.sendText(`pebble build && pebble install --phone ${phoneIp}${args ? ' ' + args : ''}`, true);
+    }
 }
 
 export async function wipeEmulator() {

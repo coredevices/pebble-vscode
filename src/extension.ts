@@ -57,7 +57,7 @@ async function getWebviewContent() {
 
 	const fullUri = await vscode.env.asExternalUri(
 		vscode.Uri.parse("http://localhost:6080/")
-	)
+	);
 	
 	// Convert to WebSocket URL
 	const wsUrl = fullUri.toString()

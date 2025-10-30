@@ -30,14 +30,16 @@
             "basalt",
             "chalk",
             "diorite",
-            "emery"
+            "emery",
+            "flint"
           ],
           "enumItemLabels": [
             "Pebble Classic",
             "Pebble Time",
             "Pebble Time Round",
             "Pebble 2",
-            "Pebble Time 2"
+            "Pebble Time 2",
+            "Pebble 2 Duo"
           ],
           "description": "Default platform to run a project in the emulator."
         },

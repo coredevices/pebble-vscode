@@ -4,7 +4,7 @@ This extension provides a development environment for Pebble apps and watchfaces
 
 ## Installation
 
-Download it from the VS Code Extension Marketplace: https://marketplace.visualstudio.com/items?itemName=coredevices.pebble-vscode
+Download it from the [VS Code Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=coredevices.pebble-vscode) or [Open-VSX](https://open-vsx.org/extension/coredevices/pebble-vscode)
 
 ## Features
 

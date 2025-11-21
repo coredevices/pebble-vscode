@@ -2,7 +2,7 @@
   "name": "pebble-vscode",
   "displayName": "Pebble",
   "description": "Development tools for Pebble apps",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "coredevices",
   "icon": "resources/icon.png",
   "engines": {

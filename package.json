@@ -53,7 +53,7 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\nSettings\n[Open Emulator App Config](command:pebble.openEmulatorAppConfig)\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
       }
     ],
     "viewsContainers": {
@@ -115,6 +115,11 @@
       {
         "command": "pebble.runPhoneLogs",
         "title": "Run on Phone with Logs",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.openEmulatorAppConfig",
+        "title": "Open emulator app configuration (Clay)",
         "category": "Pebble"
       },
       {
@@ -218,6 +223,10 @@
         },
         {
           "command": "pebble.runPhoneLogs",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.openEmulatorAppConfig",
           "when": "pebbleProject"
         },
         {

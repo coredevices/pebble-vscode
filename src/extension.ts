@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
-import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs, wipeEmulator } from './run';
+import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs, wipeEmulator, openEmulatorAppConfig } from './run';
 import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
@@ -379,6 +379,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		runOnEmulatorWithArgs('--logs');
 	});
 
+	const openEmuAppConfig = vscode.commands.registerCommand('pebble.openEmulatorAppConfig', async () => {
+		openEmulatorAppConfig();
+	});
+
 	// Additional commands for controlling preview views
 	const showSidebarPreview = vscode.commands.registerCommand('pebble.showSidebarPreview', () => {
 		sidebarProvider.show();
@@ -574,7 +578,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		treeDataProvider: treeDataProvider
 	});
 
-	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, downloadPbwCommand, downloadZipCommand, treeView, showSidebarPreview, showEditorPreviewCommand);
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, openEmuAppConfig, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, downloadPbwCommand, downloadZipCommand, treeView, showSidebarPreview, showEditorPreviewCommand);
 }
 
 export function deactivate() {}

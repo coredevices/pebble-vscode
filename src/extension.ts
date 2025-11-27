@@ -2,7 +2,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
-import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs, wipeEmulator, openEmulatorAppConfig } from './run';
+import { PebbleEmulationActionsTreeProvider } from './pebbleEmulationActionsTreeProvider';
+import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs, wipeEmulator } from './run';
+import { openEmulatorAppConfig, emulatorBatterySetState } from './emulatorControl';
 import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
@@ -307,6 +309,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewViewProvider(PebblePreviewProvider.viewType, sidebarProvider)
 	);
 
+	vscode.window.createTreeView('pebble.testTreeView', {
+		treeDataProvider: new PebbleEmulationActionsTreeProvider()
+	});
+
 	// Helper function to show editor preview
 	async function showEditorPreview() {
 		if (!webviewPanel || webviewPanel.visible === false) {
@@ -377,10 +383,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	const runWithLogs = vscode.commands.registerCommand('pebble.runEmulatorLogs', async () => {
 		createOrShowPreview();
 		runOnEmulatorWithArgs('--logs');
-	});
-
-	const openEmuAppConfig = vscode.commands.registerCommand('pebble.openEmulatorAppConfig', async () => {
-		openEmulatorAppConfig();
 	});
 
 	// Additional commands for controlling preview views
@@ -571,6 +573,14 @@ export async function activate(context: vscode.ExtensionContext) {
 				vscode.window.showErrorMessage(`Failed to create ZIP: ${error.message}`);
 			}
 		});
+	});
+
+	const openEmuAppConfig = vscode.commands.registerCommand('pebble.openEmulatorAppConfig', async () => {
+		openEmulatorAppConfig();
+	});
+
+	const emuBatteryState = vscode.commands.registerCommand('pebble.emuBatteryState', async () => {
+		emulatorBatterySetState();
 	});
 
 	const treeDataProvider = new PebbleTreeProvider();

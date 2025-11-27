@@ -53,7 +53,7 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\nSettings\n[Open Emulator App Config](command:pebble.openEmulatorAppConfig)\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
       }
     ],
     "viewsContainers": {
@@ -72,6 +72,13 @@
           "name": "Pebble",
           "type": "tree",
           "contextualTitle": "Pebble Projects",
+          "icon": "$(file-code)"
+        },
+        {
+          "id": "pebble.testTreeView",
+          "name": "Pebble emulator actions",
+          "type": "tree",
+          "contextualTitle": "Pebble Emulator Actions",
           "icon": "$(file-code)"
         }
       ],
@@ -118,11 +125,6 @@
         "category": "Pebble"
       },
       {
-        "command": "pebble.openEmulatorAppConfig",
-        "title": "Open emulator app configuration (Clay)",
-        "category": "Pebble"
-      },
-      {
         "command": "pebble.setPhoneIp",
         "title": "Set Phone IP",
         "category": "Pebble"
@@ -155,6 +157,16 @@
       {
         "command": "pebble.downloadZip",
         "title": "Download ZIP",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.openEmulatorAppConfig",
+        "title": "Open emulator app configuration",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.emulatorBatterySetState",
+        "title": "Change Battery Level & Charging State",
         "category": "Pebble"
       }
     ],
@@ -226,15 +238,19 @@
           "when": "pebbleProject"
         },
         {
-          "command": "pebble.openEmulatorAppConfig",
-          "when": "pebbleProject"
-        },
-        {
           "command": "pebble.showSidebarPreview",
           "when": "pebbleProject"
         },
         {
           "command": "pebble.showEditorPreview",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.openEmulatorAppConfig",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.emulatorBatterySetState",
           "when": "pebbleProject"
         }
       ]

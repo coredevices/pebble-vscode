@@ -175,37 +175,3 @@ export async function wipeEmulator() {
         vscode.window.showInformationMessage('Emulator data wiped successfully.');
     });
 }
-
-export async function openEmulatorAppConfig() {
-    console.log('openEmulatorAppConfig called');
-
-    const workspacePath = getWorkspacePath();
-    if (!workspacePath) {
-        vscode.window.showErrorMessage('No workspace folder is open. Please open a workspace folder and run the project.');
-        return;
-    }
-    
-    const platform = await getEmulatorPlatform();
-    if (!platform) {
-        console.log('No platform selected, returning early');
-        return;
-    }
-    console.log('Platform selected:', platform);
-
-    // Checking if the emulator is currently running : TODO ?
-    let terminal = vscode.window.terminals.find(t => t.name === `Pebble Run`);
-    if (!terminal) {
-        vscode.window.showErrorMessage('Please first run the project and keep the terminal open');
-        return;
-    }
-
-    /* if (isDevContainer()) {
-        vscode.window.showErrorMessage('Cannot display emulator app config inside DevContainer/Codespaces');
-        return;
-    } */
-
-    terminal.show();
-    terminal.sendText('\x03'); // Send Ctrl+C
-
-    terminal.sendText(`pebble emu-app-config --emulator ${platform} --vnc`, true);
-}

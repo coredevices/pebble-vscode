@@ -3,23 +3,24 @@ export class PebbleEmulationActionsTreeProvider implements vscode.TreeDataProvid
 
     actions: vscode.TreeItem[];
 
-    private createItem(label: string, commandId: string): vscode.TreeItem {
+    private createItem(label: string, commandId: string, themeIconId: string): vscode.TreeItem {
         let item = new vscode.TreeItem(label);
         item.command = {
             command: commandId,
             title: label
         };
+        item.iconPath = new vscode.ThemeIcon(themeIconId);
         return item; 
     }
 
     constructor() {
         this.actions = [
-            this.createItem('Display App Config', 'pebble.openEmulatorAppConfig'),
-            this.createItem('Change Battery Level & Charging State', 'pebble.emuBatteryState'),
-            this.createItem('Change Bluetooth Connection State', 'pebble.emuBluetoothState'),
-            this.createItem('Emulates Tap', 'pebble.emuTap'),
-            this.createItem('Sets Time Format (12h or 24h)', 'pebble.emuTimeFormat'),
-            this.createItem('Change Timeline Quick View State', 'pebble.emuTimelineQuickView'),
+            this.createItem('Open App Config in Browser', 'pebble.openEmulatorAppConfig', 'settings'),
+            this.createItem('Change Battery Level & Charging State', 'pebble.emuBatteryState', 'percentage'),
+            this.createItem('Change Bluetooth Connection State', 'pebble.emuBluetoothState', 'broadcast'),
+            this.createItem('Emulates Tap', 'pebble.emuTap', 'move'),
+            this.createItem('Sets Time Format (12h or 24h)', 'pebble.emuTimeFormat', 'calendar'),
+            this.createItem('Change Timeline Quick View State', 'pebble.emuTimelineQuickView', 'bell-dot'),
         ];
     }
 

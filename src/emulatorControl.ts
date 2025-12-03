@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { getWorkspacePath, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool, isDevContainer } from './utils';
 import { getEmulatorPlatform } from './run';
 import { isFloat32Array } from 'util/types';
+import { connect } from 'http2';
 
 
 export async function openEmulatorAppConfig() {
@@ -97,6 +98,10 @@ export async function emulatorBatterySetState() {
     terminal.sendText(`pebble emu-battery --emulator ${platform} --vnc --percent ${batteryStateStrSubstring} ${charging ? '--charging' : ''}`);
 }
 
+async function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function emulatorBluetoothSetState() {
     console.log('emulatorBluetoothSetState called');
 
@@ -131,8 +136,30 @@ export async function emulatorBluetoothSetState() {
     }
 
     terminal.show();
-
+    
     terminal.sendText(`pebble emu-bt-connection --emulator ${platform} --vnc --connected ${connected ? 'yes' : 'no'}`);
+
+    if (!connected) {
+        // Display a progress notification to match the debounce disconnection behavior in firmware
+        const waitSec = 25;
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: `Disconnected. App will be notified in ${waitSec} seconds.`,
+            cancellable: true
+        }, async (progress, cancelToken) => {
+            for (let index = 0; index < (waitSec + 1); index++) {
+                if (cancelToken.isCancellationRequested) {
+                    terminal.sendText('\x03'); // Send Ctrl+C
+                    terminal.sendText(`pebble emu-bt-connection --emulator ${platform} --vnc --connected yes`);
+                    break;
+                }
+                await sleep(1000);
+                progress.report({
+                    increment: 100 / (waitSec + 1)
+                });
+            }
+        });
+    }
 }
 
 export async function emulatorAccelTapTrigger() {

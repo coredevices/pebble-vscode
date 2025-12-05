@@ -3,7 +3,8 @@ import { getWorkspacePath, getPebbleVersionInfo, isVersionBelow, upgradePebbleTo
 import { getEmulatorPlatform } from './run';
 import { isFloat32Array } from 'util/types';
 import { connect } from 'http2';
-
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 export async function openEmulatorAppConfig() {
     console.log('openEmulatorAppConfig called');
@@ -28,15 +29,30 @@ export async function openEmulatorAppConfig() {
         return;
     }
 
+    let codespaceArgs = '';
+
     if (isDevContainer()) {
-        vscode.window.showErrorMessage('Unavailable inside DevContainer/Codespaces');
-        return;
+        const fullUri = await vscode.env.asExternalUri(
+            vscode.Uri.parse("http://localhost:6443/")
+        );
+        
+        if (process.env.CODESPACES === 'true' && process.env.CODESPACE_NAME) {
+            const { exec } = require('child_process');
+            exec(`gh codespace ports visibility 6443:public -c ${process.env.CODESPACE_NAME}`, (error: any) => {
+                if (error) {
+                    vscode.window.showErrorMessage(`Failed to make port 6443 public: ${error}`);
+                    vscode.commands.executeCommand('~remote.forwardedPorts.focus');
+                    vscode.window.showInformationMessage('Please make sure port 6443 is present and its visibility is set to Public. If not, create it manually and set it to Public (right-click->Visibility)', 'Done');
+                }
+            });
+        }
+        
+        codespaceArgs = ` --port 6443 --address ${fullUri}`;
     }
 
     terminal.show();
     terminal.sendText('\x03'); // Send Ctrl+C
-
-    terminal.sendText(`pebble emu-app-config --emulator ${platform} --vnc`, true);
+    terminal.sendText(`pebble emu-app-config --emulator ${platform} --vnc${codespaceArgs}`, true);
 }
 
 export async function emulatorBatterySetState() {

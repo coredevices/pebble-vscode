@@ -1,10 +1,6 @@
 import * as vscode from 'vscode';
-import { getWorkspacePath, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool, isDevContainer } from './utils';
+import { getWorkspacePath, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool, isDevContainer, execAsync } from './utils';
 import { getEmulatorPlatform } from './run';
-import { isFloat32Array } from 'util/types';
-import { connect } from 'http2';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 
 export async function openEmulatorAppConfig() {
     console.log('openEmulatorAppConfig called');
@@ -32,22 +28,32 @@ export async function openEmulatorAppConfig() {
     let codespaceArgs = '';
 
     if (isDevContainer()) {
-        const fullUri = await vscode.env.asExternalUri(
+        let fullUri = await vscode.env.asExternalUri(
             vscode.Uri.parse("http://localhost:6443/")
         );
-        
+
         if (process.env.CODESPACES === 'true' && process.env.CODESPACE_NAME) {
-            const { exec } = require('child_process');
-            exec(`gh codespace ports visibility 6443:public -c ${process.env.CODESPACE_NAME}`, (error: any) => {
-                if (error) {
-                    vscode.window.showErrorMessage(`Failed to make port 6443 public: ${error}`);
-                    vscode.commands.executeCommand('~remote.forwardedPorts.focus');
-                    vscode.window.showInformationMessage('Please make sure port 6443 is present and its visibility is set to Public. If not, create it manually and set it to Public (right-click->Visibility)', 'Done');
+            try {
+                const { stdout, stderr } = await execAsync(`gh codespace ports visibility 6443:public -c ${process.env.CODESPACE_NAME}`);
+                if (stderr) {
+                    throw stderr;
+                } else {
+                    console.debug('(emu-app-config) codespace port visibility 6443 public OK');
                 }
-            });
+            } catch (error: any) {
+                console.error(`(emu-app-config) codespace port visibility 6443 public: ${error}`);
+                vscode.window.showErrorMessage(`Failed to make port 6443 public: ${error}`);
+            }
+
+            if (fullUri.authority.startsWith('localhost') || fullUri.authority.startsWith('127.0.0.1')) {
+                fullUri = await vscode.env.asExternalUri(
+                    vscode.Uri.parse("http://localhost:6443/")
+                );
+            }
         }
         
         codespaceArgs = ` --port 6443 --address ${fullUri}`;
+        console.debug(`Using codespace arguments = '${codespaceArgs}'`);
     }
 
     terminal.show();

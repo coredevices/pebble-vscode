@@ -55,7 +55,7 @@ export async function isPebbleProject() : Promise<boolean> {
 	}
 }
 
-const execAsync = promisify(exec);
+export const execAsync = promisify(exec);
 
 export interface PebbleVersionInfo {
 	toolVersion: string | null;

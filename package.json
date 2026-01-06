@@ -73,6 +73,14 @@
           "type": "tree",
           "contextualTitle": "Pebble Projects",
           "icon": "$(file-code)"
+        },
+        {
+          "id": "pebble.emuActionsTreeView",
+          "name": "Pebble emulator actions",
+          "type": "tree",
+          "contextualTitle": "Pebble Emulator Actions",
+          "icon": "$(file-code)",
+          "initialSize": 0
         }
       ],
       "explorer": [
@@ -151,6 +159,36 @@
         "command": "pebble.downloadZip",
         "title": "Download ZIP",
         "category": "Pebble"
+      },
+      {
+        "command": "pebble.openEmulatorAppConfig",
+        "title": "Emulator - Open emulator app configuration in a browser",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.emuBatteryState",
+        "title": "Emulator - Change Battery Level & Charging State",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.emuBluetoothState",
+        "title": "Emulator - Change Bluetooth Connection State",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.emuTap",
+        "title": "Emulator - Emulates Tap",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.emuTimeFormat",
+        "title": "Emulator - Sets Time Format (12h or 24h)",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.emuTimelineQuickView",
+        "title": "Emulator - Change Timeline Quick View State",
+        "category": "Pebble"
       }
     ],
     "walkthroughs": [
@@ -226,6 +264,30 @@
         },
         {
           "command": "pebble.showEditorPreview",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.openEmulatorAppConfig",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.emuBatteryState",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.emuBluetoothState",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.emuTap",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.emuTimeFormat",
+          "when": "pebbleProject"
+        },
+        {
+          "command": "pebble.emuTimelineQuickView",
           "when": "pebbleProject"
         }
       ]

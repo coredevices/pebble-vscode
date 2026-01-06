@@ -2,7 +2,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { PebbleTreeProvider } from './pebbleTreeProvider';
+import { PebbleEmulationActionsTreeProvider } from './pebbleEmulationActionsTreeProvider';
 import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs, wipeEmulator } from './run';
+import { openEmulatorAppConfig, emulatorBatterySetState, emulatorBluetoothSetState, emulatorAccelTapTrigger, emulatorSetTimeFormat, emulatorTimelineQuickViewSet } from './emulatorControl';
 import { createProject, openProject } from './project';
 import { isPebbleProject } from './utils';
 
@@ -569,12 +571,41 @@ export async function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
+	const openEmuAppConfig = vscode.commands.registerCommand('pebble.openEmulatorAppConfig', async () => {
+		openEmulatorAppConfig();
+	});
+
+	const emuBatteryState = vscode.commands.registerCommand('pebble.emuBatteryState', async () => {
+		emulatorBatterySetState();
+	});
+
+	const emuBluetoothState = vscode.commands.registerCommand('pebble.emuBluetoothState', async () => {
+		emulatorBluetoothSetState();
+	});
+	
+	const emuAccelTap = vscode.commands.registerCommand('pebble.emuTap', async () => {
+		emulatorAccelTapTrigger();
+	});
+
+	const emuTimeFormat = vscode.commands.registerCommand('pebble.emuTimeFormat', async () => {
+		emulatorSetTimeFormat();
+	});
+
+	const emuTimelineQuickView = vscode.commands.registerCommand('pebble.emuTimelineQuickView', async () => {
+		emulatorTimelineQuickViewSet();
+	});
+
 	const treeDataProvider = new PebbleTreeProvider();
 	const treeView = vscode.window.createTreeView('backgroundTreeView', {
 		treeDataProvider: treeDataProvider
 	});
 
-	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, downloadPbwCommand, downloadZipCommand, treeView, showSidebarPreview, showEditorPreviewCommand);
+	const emuActionsTreeDataProvider = new PebbleEmulationActionsTreeProvider();
+	const emuActionsTreeView = vscode.window.createTreeView('pebble.emuActionsTreeView', {
+		treeDataProvider: emuActionsTreeDataProvider
+	});
+
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, downloadPbwCommand, downloadZipCommand, treeView, showSidebarPreview, showEditorPreviewCommand, emuActionsTreeView, openEmuAppConfig, emuBatteryState, emuBluetoothState, emuAccelTap, emuTimeFormat, emuTimelineQuickView);
 }
 
 export function deactivate() {}

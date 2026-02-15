@@ -21,6 +21,11 @@ export async function createProject(context: vscode.ExtensionContext) {
 			id: '--c --javascript'
 		},
 		{
+			label: 'Alloy',
+			detail: 'Embedded JS and phone-side JS',
+			id: '--alloy'
+		},
+		{
 			label: 'C with AI',
 			detail: 'With instructions for Claude Code and Cursor',
 			id: '--c --ai'

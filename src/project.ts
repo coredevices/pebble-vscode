@@ -1,6 +1,10 @@
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { storeLastPath, getLastPath, isPebbleSdkInstalled, getPebbleVersionInfo, isVersionBelow, upgradePebbleTool, isDevContainer } from './utils';
+import { promisify } from 'util';
+import { exec } from 'child_process';
+
+const execAsync = promisify(exec);
 import * as cp from 'child_process';
 
 interface ProjectTypeItem extends vscode.QuickPickItem {
@@ -179,4 +183,92 @@ export async function openProject() {
 	} else {
 		vscode.commands.executeCommand('workbench.action.files.openFolder');
 	}
+}
+
+export async function changeSDK() {
+	let sdkList: string;
+	try {
+		const { stdout } = await execAsync('pebble sdk list');
+		sdkList = stdout;
+	} catch (error: any) {
+		vscode.window.showErrorMessage(`Failed to get SDK list: ${error.message}`);
+		return;
+	}
+
+	// Parse output format:
+	//   Installed SDKs:
+	//   4.9.124
+	//   4.9.79 (active)
+	//   ...
+	//   Available SDKs:
+	//   4.5
+	//   ...
+	const lines = sdkList.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+	const sdkEntries: { version: string; isActive: boolean; installed: boolean }[] = [];
+	let section: 'installed' | 'available' | null = null;
+
+	for (const line of lines) {
+		if (line.startsWith('Installed SDKs')) {
+			section = 'installed';
+			continue;
+		}
+		if (line.startsWith('Available SDKs')) {
+			section = 'available';
+			continue;
+		}
+		if (line.startsWith('Could not fetch')) {
+			continue;
+		}
+		if (!section) {
+			continue;
+		}
+
+		const isActive = line.includes('(active)');
+		const version = line.replace('(active)', '').trim();
+		sdkEntries.push({ version, isActive, installed: section === 'installed' });
+	}
+
+	if (sdkEntries.length === 0) {
+		vscode.window.showInformationMessage('No SDKs available.');
+		return;
+	}
+
+	const items: vscode.QuickPickItem[] = sdkEntries.map(entry => ({
+		label: entry.version,
+		description: entry.isActive ? '(active)' : entry.installed ? '(installed)' : '(not installed)'
+	}));
+
+	const selected = await vscode.window.showQuickPick(items, {
+		placeHolder: 'Select an SDK version'
+	});
+
+	if (!selected) {
+		return;
+	}
+
+	const version = selected.label;
+	const entry = sdkEntries.find(e => e.version === version);
+
+	if (entry?.isActive) {
+		vscode.window.showInformationMessage(`SDK ${version} is already active.`);
+		return;
+	}
+
+	await vscode.window.withProgress({
+		location: vscode.ProgressLocation.Notification,
+		title: entry?.installed ? `Activating SDK ${version}...` : `Installing SDK ${version}...`,
+		cancellable: false
+	}, async () => {
+		try {
+			if (entry?.installed) {
+				await execAsync(`pebble sdk activate ${version}`);
+				vscode.window.showInformationMessage(`Switched to SDK ${version}.`);
+			} else {
+				await execAsync(`pebble sdk install ${version}`);
+				vscode.window.showInformationMessage(`Installed and activated SDK ${version}.`);
+			}
+		} catch (error: any) {
+			vscode.window.showErrorMessage(`Failed to switch SDK: ${error.message}`);
+		}
+	});
 }

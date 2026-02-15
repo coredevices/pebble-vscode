@@ -55,7 +55,7 @@
     "viewsWelcome": [
       {
         "view": "backgroundTreeView",
-        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\nSettings\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
+        "contents": "[New Project](command:pebble.newProject)\n[Open Project](command:pebble.openProject)\nRun\n[Emulator](command:pebble.runEmulator)\n[Emulator with Logs](command:pebble.runEmulatorLogs)\n[Phone](command:pebble.runPhone)\n[Phone with Logs](command:pebble.runPhoneLogs)\nSettings\n[Change SDK](command:pebble.changeSDK)\n[Change Emulator](command:pebble.setDefaultPlatform)\n[Change Phone](command:pebble.setPhoneIp)\nDownload\n[Download PBW](command:pebble.downloadPbw)\n[Download ZIP](command:pebble.downloadZip)\nDebug\n[Wipe Emulator](command:pebble.wipeEmulator)"
       }
     ],
     "viewsContainers": {
@@ -160,6 +160,11 @@
       {
         "command": "pebble.downloadZip",
         "title": "Download ZIP",
+        "category": "Pebble"
+      },
+      {
+        "command": "pebble.changeSDK",
+        "title": "Change SDK",
         "category": "Pebble"
       },
       {

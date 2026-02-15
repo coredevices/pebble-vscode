@@ -5,7 +5,7 @@ import { PebbleTreeProvider } from './pebbleTreeProvider';
 import { PebbleEmulationActionsTreeProvider } from './pebbleEmulationActionsTreeProvider';
 import { requestEmulatorPlatform, runOnEmulatorWithArgs, requestPhoneIp, runOnPhoneWithArgs, wipeEmulator } from './run';
 import { openEmulatorAppConfig, emulatorBatterySetState, emulatorBluetoothSetState, emulatorAccelTapTrigger, emulatorSetTimeFormat, emulatorTimelineQuickViewSet } from './emulatorControl';
-import { createProject, openProject } from './project';
+import { createProject, openProject, changeSDK } from './project';
 import { isPebbleProject } from './utils';
 
 class PebblePreviewProvider implements vscode.WebviewViewProvider {
@@ -371,6 +371,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		openProject();
 	});
 
+	const changeSDKDisposable = vscode.commands.registerCommand('pebble.changeSDK', async () => {
+		changeSDK();
+	});
+
 	const run = vscode.commands.registerCommand('pebble.runEmulator', async () => {
 		createOrShowPreview();
 		runOnEmulatorWithArgs();
@@ -605,7 +609,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		treeDataProvider: emuActionsTreeDataProvider
 	});
 
-	context.subscriptions.push(newProjectDisposable, openProjectDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, downloadPbwCommand, downloadZipCommand, treeView, showSidebarPreview, showEditorPreviewCommand, emuActionsTreeView, openEmuAppConfig, emuBatteryState, emuBluetoothState, emuAccelTap, emuTimeFormat, emuTimelineQuickView);
+	context.subscriptions.push(newProjectDisposable, openProjectDisposable, changeSDKDisposable, run, runWithLogs, setDefaultPlatform, runOnPhone, runOnPhoneWithLogs, setPhoneIp, wipeEmulatorCommand, downloadPbwCommand, downloadZipCommand, treeView, showSidebarPreview, showEditorPreviewCommand, emuActionsTreeView, openEmuAppConfig, emuBatteryState, emuBluetoothState, emuAccelTap, emuTimeFormat, emuTimelineQuickView);
 }
 
 export function deactivate() {}

@@ -28,6 +28,7 @@ export async function requestEmulatorPlatform() {
 		'Pebble 2 (diorite)': 'diorite',
 		'Pebble Time 2 (emery)': 'emery',
         'Pebble 2 Duo (flint)': 'flint',
+        'Pebble Round 2 (gabbro)': 'gabbro',
 	};
 
 	const platformName = await vscode.window.showQuickPick(Object.keys(platformMap), {

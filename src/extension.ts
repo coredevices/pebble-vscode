@@ -52,7 +52,10 @@ async function getWebviewContent() {
 		const { exec } = require('child_process');
 		exec(`gh codespace ports visibility 6080:public -c ${process.env.CODESPACE_NAME}`, (error: any) => {
 			if (error) {
+				console.error(`(webview) codespace port visibility 6080 public: ${error}`);
 				vscode.window.showErrorMessage(`Failed to make port 6080 public: ${error}`);
+			} else {
+				console.debug('(webview) codespace port visibility 6080 public OK');
 			}
 		});
 	}
@@ -60,6 +63,8 @@ async function getWebviewContent() {
 	const fullUri = await vscode.env.asExternalUri(
 		vscode.Uri.parse("http://localhost:6080/")
 	);
+	
+	console.debug(`Using WebviewContent URI = '${fullUri}'`);
 	
 	// Convert to WebSocket URL
 	const wsUrl = fullUri.toString()
